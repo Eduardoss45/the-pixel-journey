@@ -1,0 +1,76 @@
+[gd_scene load_steps=5 format=3 uid="uid://capjntsubujmb"]
+
+[ext_resource type="Script" uid="uid://47wychp54bpp" path="res://scenes/start_menu/scripts/MainMenu.cs" id="1_ai42b"]
+[ext_resource type="Texture2D" uid="uid://d237yc8mj3bc3" path="res://scenes/start_menu/assets/buttons/start/default.png" id="2_8s1yk"]
+[ext_resource type="Texture2D" uid="uid://p8cug82ykj8s" path="res://scenes/start_menu/assets/title/title_white.png" id="2_gv1dc"]
+[ext_resource type="Texture2D" uid="uid://d4d248fvu5keg" path="res://scenes/start_menu/assets/buttons/quit/default.png" id="4_2l5ag"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+script = ExtResource("1_ai42b")
+
+[node name="Background" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -576.0
+offset_top = -324.0
+offset_right = 576.0
+offset_bottom = 324.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ContainerCentral" type="VBoxContainer" parent="."]
+clip_contents = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -191.0
+offset_right = 300.0
+offset_bottom = 191.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TextureRect" type="TextureRect" parent="ContainerCentral"]
+layout_mode = 2
+texture = ExtResource("2_gv1dc")
+
+[node name="ContainerHorizontal" type="HBoxContainer" parent="ContainerCentral"]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="Btn_iniciar" type="TextureButton" parent="ContainerCentral/ContainerHorizontal"]
+layout_mode = 2
+texture_normal = ExtResource("2_8s1yk")
+
+[node name="ContainerInferiorEsquerdo" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -31.0
+offset_right = 57.0
+grow_vertical = 0
+
+[node name="Margem" type="MarginContainer" parent="ContainerInferiorEsquerdo"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="Btn_sair" type="TextureButton" parent="ContainerInferiorEsquerdo/Margem"]
+layout_mode = 2
+texture_normal = ExtResource("4_2l5ag")
