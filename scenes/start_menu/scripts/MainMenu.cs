@@ -33,7 +33,6 @@ public partial class MainMenu : Control
     private void OnBtnIniciarPressed()
     {
         GD.Print("Iniciar pressionado!");
-        // * Aqui você pode carregar a próxima cena do jogo
     }
 
     private void OnBtnSairPressed()

@@ -1,0 +1,38 @@
+[gd_scene load_steps=3 format=3 uid="uid://bj2d446jvgesr"]
+
+[ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_idv1d"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_sul5r"]
+
+[node name="Game" type="Node2D"]
+
+[node name="StaticBody2D1" type="StaticBody2D" parent="."]
+position = Vector2(70, 194)
+scale = Vector2(7, 0.528)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D1"]
+shape = SubResource("RectangleShape2D_sul5r")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="."]
+position = Vector2(210, 165)
+scale = Vector2(7, 0.528)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2"]
+shape = SubResource("RectangleShape2D_sul5r")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="."]
+position = Vector2(321, 133)
+scale = Vector2(7, 0.528)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3"]
+shape = SubResource("RectangleShape2D_sul5r")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="."]
+position = Vector2(452, 100)
+scale = Vector2(7, 0.528)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4"]
+shape = SubResource("RectangleShape2D_sul5r")
+
+[node name="Player" parent="." instance=ExtResource("1_idv1d")]
+position = Vector2(10, 179)

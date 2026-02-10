@@ -1,6 +1,6 @@
 using Godot;
 using System;
-using CodeEditor.Logic;
+using CodeEditor.Logic; // presumindo que HtmlValidator está aqui
 
 public partial class CodeEditorUI : Node
 {
@@ -8,11 +8,14 @@ public partial class CodeEditorUI : Node
     [Export] private Button verifyButton = null!;
     [Export] private Label feedbackLabel = null!;
 
+    [Export] private FontFile editorFont;
+    [Export] private int fontSize = 15;
+
     public override void _Ready()
     {
-        codeEdit = GetNodeOrNull<CodeEdit>("%CodeEdit") ?? GetNodeOrNull<CodeEdit>("CodeEdit");
-        verifyButton = GetNodeOrNull<Button>("%VerifyButton") ?? GetNodeOrNull<Button>("Verify");
-        feedbackLabel = GetNodeOrNull<Label>("%FeedbackLabel") ?? GetNodeOrNull<Label>("Feedback");
+        codeEdit ??= GetNodeOrNull<CodeEdit>("%CodeEdit") ?? GetNodeOrNull<CodeEdit>("CodeEdit");
+        verifyButton ??= GetNodeOrNull<Button>("%VerifyButton") ?? GetNodeOrNull<Button>("Verify");
+        feedbackLabel ??= GetNodeOrNull<Label>("%FeedbackLabel") ?? GetNodeOrNull<Label>("Feedback");
 
         if (codeEdit == null || verifyButton == null || feedbackLabel == null)
         {
@@ -20,55 +23,76 @@ public partial class CodeEditorUI : Node
             return;
         }
 
-        SetupHighlighter();
+        ApplyVSCodeLikeTheme();
+        SetupHtmlHighlighterCloserToVSCode();
+        SetupEditorPreferences();
+
         verifyButton.Pressed += OnVerifyPressed;
 
-        // Opcional: limpa feedback inicial
         feedbackLabel.Text = "Digite seu código HTML e clique em Verificar!";
         feedbackLabel.Modulate = Colors.White;
     }
 
-    private void SetupHighlighter()
+    private void ApplyVSCodeLikeTheme()
     {
-        var highlighter = new CodeHighlighter();
+        // Cores próximas do VS Code Dark+ (valores hex aproximados 2024–2026)
+        codeEdit.AddThemeColorOverride("background_color",    new Color(0.118f, 0.118f, 0.118f)); // #1e1e1e
+        codeEdit.AddThemeColorOverride("font_color",          new Color(0.831f, 0.831f, 0.831f)); // #d4d4d4
+        codeEdit.AddThemeColorOverride("font_readonly_color", new Color(0.6f, 0.6f, 0.6f));
+        codeEdit.AddThemeColorOverride("caret_color",         new Color(0.682f, 0.686f, 0.678f)); // #aeafad
+        codeEdit.AddThemeColorOverride("selection_color",     new Color(0.149f, 0.310f, 0.471f, 0.8f)); // #264f78 com alpha
+        codeEdit.AddThemeColorOverride("current_line_color",  new Color(0.157f, 0.157f, 0.157f)); // #282828
+        codeEdit.AddThemeColorOverride("line_number_color",   new Color(0.522f, 0.522f, 0.522f)); // #858585
+        codeEdit.AddThemeColorOverride("gutter_background",   new Color(0.145f, 0.145f, 0.145f)); // #252526
 
-        // Regiões delimitadas (prioridade alta)
-        highlighter.AddColorRegion("<!--", "-->", new Color(0.4f, 0.6f, 0.4f));     // comentários
-        highlighter.AddColorRegion("\"", "\"", new Color(0.8f, 1f, 0.6f));          // strings duplas
-        highlighter.AddColorRegion("'", "'", new Color(0.8f, 1f, 0.6f));            // strings simples
+        // Se a fonte for moderna (JetBrains Mono, Fira Code, etc.)
+        if (editorFont != null)
+        {
+            codeEdit.AddThemeFontOverride("font", editorFont);
+            codeEdit.AddThemeFontSizeOverride("font_size", fontSize);
+        }
+    }
 
-        // Palavras-chave (nomes de tags e atributos)
-        highlighter.AddKeywordColor("!doctype", new Color(0.8f, 0.8f, 0.4f));       // amarelo ouro
-        highlighter.AddKeywordColor("html", new Color(1f, 0.5f, 0.8f));             // rosa
-        highlighter.AddKeywordColor("head", new Color(1f, 0.5f, 0.8f));
-        highlighter.AddKeywordColor("body", new Color(1f, 0.5f, 0.8f));
-        highlighter.AddKeywordColor("title", new Color(1f, 0.5f, 0.8f));
-        highlighter.AddKeywordColor("meta", new Color(0.5f, 0.8f, 1f));             // azul claro
-        highlighter.AddKeywordColor("img", new Color(0.5f, 0.8f, 1f));
+    private void SetupHtmlHighlighterCloserToVSCode()
+    {
+        var hl = new CodeHighlighter();
 
-        // Atributos comuns
-        highlighter.AddKeywordColor("src", new Color(0.9f, 0.6f, 1f));              // roxo claro
-        highlighter.AddKeywordColor("alt", new Color(0.9f, 0.6f, 1f));
-        highlighter.AddKeywordColor("charset", new Color(0.9f, 0.6f, 1f));
-        highlighter.AddKeywordColor("name", new Color(0.9f, 0.6f, 1f));
-        highlighter.AddKeywordColor("content", new Color(0.9f, 0.6f, 1f));
-        highlighter.AddKeywordColor("viewport", new Color(0.9f, 0.6f, 1f));
+        // Comentários HTML
+        hl.AddColorRegion("<!--", "-->", new Color("#6a9955"));
 
-        // Cores especiais
-        highlighter.SymbolColor = new Color(1f, 0.7f, 0.7f);   // símbolos = / > <
-        highlighter.NumberColor = new Color(0.6f, 1f, 0.8f);    // números (ex: widths, etc.)
+        // Strings
+        hl.AddColorRegion("\"", "\"", new Color("#ce9178"), false);
+        hl.AddColorRegion("'", "'", new Color("#ce9178"), false);
 
-        codeEdit.SyntaxHighlighter = highlighter;
+        // Tags HTML
+        string[] tags = { "html", "head", "body", "title", "meta", "link", "script", "div", "span", "p", "h1","h2","h3", "img", "a", "ul", "li", "form", "input", "button", "style" };
+        foreach (var tag in tags)
+            hl.AddKeywordColor(tag, new Color("#569cd6"));
 
-        // Configurações do editor
+        // Atributos
+        string[] attrs = { "id", "class", "style", "src", "alt", "href", "type", "name", "value", "placeholder", "charset", "content", "rel", "viewport" };
+        foreach (var attr in attrs)
+            hl.AddKeywordColor(attr, new Color("#9cdcfe"));
+
+        // !DOCTYPE e especiais
+        hl.AddKeywordColor("!doctype", new Color("#c586c0"));
+
+        hl.SymbolColor = new Color("#d4d4d4");
+        hl.NumberColor = new Color("#b5cea8");
+
+        codeEdit.SyntaxHighlighter = hl;
+    }
+
+    private void SetupEditorPreferences()
+    {
         codeEdit.GuttersDrawLineNumbers = true;
-        codeEdit.GuttersZeroPadLineNumbers = true;
+        codeEdit.GuttersZeroPadLineNumbers = false;
         codeEdit.IndentWrappedLines = true;
         codeEdit.AutoBraceCompletionEnabled = true;
-        codeEdit.IndentAutomatic = true;
-        codeEdit.CodeCompletionEnabled = true;
-        codeEdit.ScrollSmooth = true;
+        codeEdit.IndentAutomatic = true;           // Isso existe → auto-indenta ao pressionar Enter
+        codeEdit.IndentSize = 2;                   // 2 espaços — padrão VS Code para HTML/JS
         codeEdit.WrapMode = TextEdit.LineWrappingMode.Boundary;
+        codeEdit.ScrollSmooth = true;
         codeEdit.ContextMenuEnabled = true;
         codeEdit.LineFolding = true;
         codeEdit.GuttersDrawFoldGutter = true;
@@ -80,7 +104,7 @@ public partial class CodeEditorUI : Node
 
         var result = HtmlValidator.Validate(codeEdit.Text);
 
-        feedbackLabel.Modulate = result.Success ? Colors.LimeGreen : Colors.IndianRed;
+        feedbackLabel.Modulate = result.Success ? new Color("#6a9955") : new Color("#f44747");
         feedbackLabel.Text = result.Message;
 
         if (!result.Success && result.Errors.Count > 0)
@@ -88,11 +112,6 @@ public partial class CodeEditorUI : Node
             feedbackLabel.Text += "\n\nErros encontrados:\n" + string.Join("\n• ", result.Errors);
         }
 
-        GD.Print($"Validação concluída → Sucesso: {result.Success} | Pontuação: {result.Score:P0}");
-
-        // Opcional: animação simples ou som
-        // var tween = CreateTween();
-        // tween.TweenProperty(feedbackLabel, "scale", Vector2.One * 1.1f, 0.15).SetTrans(Tween.TransitionType.Bounce);
-        // tween.TweenProperty(feedbackLabel, "scale", Vector2.One, 0.15);
+        GD.Print($"Validação → Sucesso: {result.Success} | Score: {result.Score:P0}");
     }
 }

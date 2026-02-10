@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://cbn6ob325oihn"
+path="res://.godot/imported/Conclusão.mp3-d0a07e709e047b43fb0e492ba053babe.mp3str"
+
+[deps]
+
+source_file="res://scenes/material/A jornada de pixel/Trilha sonora/Conclusão.mp3"
+dest_files=["res://.godot/imported/Conclusão.mp3-d0a07e709e047b43fb0e492ba053babe.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
