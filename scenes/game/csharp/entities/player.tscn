@@ -126,5 +126,5 @@ autoplay = "idle"
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(-2, -2)
 limit_left = 0
-limit_bottom = 200
+limit_bottom = 208
 position_smoothing_enabled = true
