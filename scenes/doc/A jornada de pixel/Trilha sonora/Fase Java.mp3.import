@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://duj6thq6npre1"
+path="res://.godot/imported/Fase Java.mp3-e00d18430f6fc716e41c1c7fd47dc7a0.mp3str"
+
+[deps]
+
+source_file="res://scenes/doc/A jornada de pixel/Trilha sonora/Fase Java.mp3"
+dest_files=["res://.godot/imported/Fase Java.mp3-e00d18430f6fc716e41c1c7fd47dc7a0.mp3str"]
+
+[params]
+
+loop=false
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4
