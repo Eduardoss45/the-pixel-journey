@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bk0bco0enqpwq"
-path="res://.godot/imported/4 - Background_clouds.png-3af8312010b1b27ffd64c818486e5f49.ctex"
+uid="uid://dapq2dolptq5b"
+path="res://.godot/imported/4 - Floating_clouds.png-7d8e1e9e13bff896c3f9811ae9caf69a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/game/csharp/materials/Tropics/Background parts/4 - Background_clouds.png"
-dest_files=["res://.godot/imported/4 - Background_clouds.png-3af8312010b1b27ffd64c818486e5f49.ctex"]
+source_file="res://scenes/game/csharp/materials/Tropics/Background parts/4 - Floating_clouds.png"
+dest_files=["res://.godot/imported/4 - Floating_clouds.png-7d8e1e9e13bff896c3f9811ae9caf69a.ctex"]
 
 [params]
 

@@ -111,7 +111,7 @@ animations = [{
 "speed": 10.0
 }]
 
-[node name="Player" type="CharacterBody2D"]
+[node name="Player" type="CharacterBody2D" groups=["Player"]]
 script = ExtResource("1_n2u3w")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -122,9 +122,3 @@ z_index = 1
 sprite_frames = SubResource("SpriteFrames_35vjf")
 animation = &"idle"
 autoplay = "idle"
-
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(-2, -2)
-limit_left = 0
-limit_bottom = 208
-position_smoothing_enabled = true

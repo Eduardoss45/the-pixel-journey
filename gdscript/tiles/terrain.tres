@@ -1,15 +1,12 @@
-[gd_resource type="TileSet" load_steps=11 format=3 uid="uid://ci6yocecub5y3"]
+[gd_resource type="TileSet" load_steps=10 format=3 uid="uid://ci6yocecub5y3"]
 
 [ext_resource type="Texture2D" uid="uid://crk0d4b1jyus4" path="res://gdscript/sprites/Seasonal Tilesets/1 - Grassland/Terrain (16 x 16).png" id="1_udkip"]
 [ext_resource type="Texture2D" uid="uid://b4rwuf8uohjsb" path="res://gdscript/sprites/Seasonal Tilesets/2 - Autumn Forest/Terrain (16 x 16).png" id="2_8t5ty"]
 [ext_resource type="Texture2D" uid="uid://tsm5t5xdta78" path="res://gdscript/sprites/Seasonal Tilesets/3 - Tropics/Terrain (16 x 16).png" id="3_8t5ty"]
 [ext_resource type="Texture2D" uid="uid://bwo1fwlfqnds" path="res://gdscript/sprites/Seasonal Tilesets/3 - Tropics/undewater_terrain.png" id="4_selcm"]
 
-[sub_resource type="TileMapPattern" id="TileMapPattern_8t5ty"]
-tile_data = PackedInt32Array(0, 589826, 3, 1, 655362, 3, 2, 786434, 3, 3, 851970, 3)
-
-[sub_resource type="TileMapPattern" id="TileMapPattern_selcm"]
-tile_data = PackedInt32Array(0, 589825, 3, 1, 655361, 3, 2, 851969, 3)
+[sub_resource type="TileMapPattern" id="TileMapPattern_x37tn"]
+tile_data = PackedInt32Array(0, 589825, 3, 1, 655361, 3, 2, 786433, 3, 3, 851969, 3)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33cqm"]
 resource_name = "Grassland"
@@ -119,16 +116,20 @@ texture = ExtResource("2_8t5ty")
 7:3/0/z_index = 3
 7:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 9:3/0 = 0
+9:3/0/z_index = 2
 9:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, 8, 0, -8, 0)
 9:3/0/physics_layer_0/polygon_0/one_way = true
 10:3/0 = 0
+10:3/0/z_index = 2
 10:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, 8, 0, -8, 0)
 10:3/0/physics_layer_0/polygon_0/one_way = true
 11:3/0 = 0
 12:3/0 = 0
+12:3/0/z_index = 2
 12:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, 8, 0, -8, 0)
 12:3/0/physics_layer_0/polygon_0/one_way = true
 13:3/0 = 0
+13:3/0/z_index = 2
 13:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, 8, 0, -8, 0)
 13:3/0/physics_layer_0/polygon_0/one_way = true
 15:3/0 = 0
@@ -209,17 +210,13 @@ texture = ExtResource("3_8t5ty")
 6:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 7:3/0 = 0
 7:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
-9:3/0 = 0
-9:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
-9:3/0/physics_layer_0/polygon_0/one_way = true
-10:3/0 = 0
-10:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
-10:3/0/physics_layer_0/polygon_0/one_way = true
 11:3/0 = 0
 12:3/0 = 0
+12:3/0/z_index = 2
 12:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
 12:3/0/physics_layer_0/polygon_0/one_way = true
 13:3/0 = 0
+13:3/0/z_index = 2
 13:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
 13:3/0/physics_layer_0/polygon_0/one_way = true
 15:3/0 = 0
@@ -254,6 +251,14 @@ texture = ExtResource("3_8t5ty")
 5:6/0 = 0
 5:6/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 4:8/0 = 0
+10:3/0 = 0
+10:3/0/z_index = 2
+10:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
+10:3/0/physics_layer_0/polygon_0/one_way = true
+9:3/0 = 0
+9:3/0/z_index = 2
+9:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 0, -8, 0)
+9:3/0/physics_layer_0/polygon_0/one_way = true
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_4mtcj"]
 texture = ExtResource("4_selcm")
@@ -275,5 +280,4 @@ sources/0 = SubResource("TileSetAtlasSource_33cqm")
 sources/1 = SubResource("TileSetAtlasSource_qpk70")
 sources/2 = SubResource("TileSetAtlasSource_selcm")
 sources/3 = SubResource("TileSetAtlasSource_4mtcj")
-pattern_0 = SubResource("TileMapPattern_8t5ty")
-pattern_1 = SubResource("TileMapPattern_selcm")
+pattern_0 = SubResource("TileMapPattern_x37tn")

@@ -1,6 +1,6 @@
 [gd_resource type="TileSet" load_steps=3 format=3 uid="uid://evyc8spfes4j"]
 
-[ext_resource type="Texture2D" uid="uid://ckr75glq1e67v" path="res://sprites/Seasonal Tilesets/5 - Misc. universal tiles/Water_frames (16 x 32).png" id="1_5y656"]
+[ext_resource type="Texture2D" uid="uid://ckr75glq1e67v" path="res://gdscript/sprites/Seasonal Tilesets/5 - Misc. universal tiles/Water_frames (16 x 32).png" id="1_5y656"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ytc0w"]
 texture = ExtResource("1_5y656")

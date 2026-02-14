@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=4 uid="uid://bj2d446jvgesr"]
+[gd_scene load_steps=18 format=4 uid="uid://bj2d446jvgesr"]
 
 [ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_idv1d"]
 [ext_resource type="Texture2D" uid="uid://d1ywg6xvhkup5" path="res://scenes/game/csharp/materials/Grassland/Terrain (16 x 16).png" id="1_trxfo"]
 [ext_resource type="Texture2D" uid="uid://c5gr6vkw4cym6" path="res://scenes/game/csharp/materials/Grassland/Grassland_entities (16 x 16).png" id="3_46och"]
 [ext_resource type="Texture2D" uid="uid://j8yojxucbmev" path="res://scenes/game/csharp/materials/Misc. universal tiles/Flowers (16 x 16).png" id="4_gpom8"]
 [ext_resource type="Texture2D" uid="uid://bgrl3t66ev10r" path="res://scenes/game/csharp/materials/Misc. universal tiles/House (112 x 96).png" id="5_qhcj8"]
+[ext_resource type="PackedScene" uid="uid://bw2gs826fqind" path="res://scenes/game/csharp/entities/camera.tscn" id="6_qhcj8"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_46och"]
 texture = ExtResource("1_trxfo")
@@ -76,6 +77,21 @@ texture = ExtResource("1_trxfo")
 physics_layer_0/collision_layer = 1
 sources/0 = SubResource("TileSetAtlasSource_46och")
 
+[sub_resource type="TileMapPattern" id="TileMapPattern_gpom8"]
+tile_data = PackedInt32Array(65536, 65536, 5, 1, 65536, 1, 65537, 65536, 5, 2, 589824, 1)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_qhcj8"]
+tile_data = PackedInt32Array(0, 327680, 1, 1, 327680, 1, 2, 327680, 1)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_ii8ri"]
+tile_data = PackedInt32Array(0, 589824, 1, 65537, 65536, 5, 65538, 65536, 5)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_4jle1"]
+tile_data = PackedInt32Array(0, 196608, 5)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_veio8"]
+tile_data = PackedInt32Array(65548, 327680, 1, 65549, 327680, 1, 65550, 327680, 1)
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_jv3fo"]
 texture = ExtResource("3_46och")
 15:2/0 = 0
@@ -128,6 +144,11 @@ texture = ExtResource("5_qhcj8")
 sources/0 = SubResource("TileSetAtlasSource_jv3fo")
 sources/1 = SubResource("TileSetAtlasSource_ii8ri")
 sources/2 = SubResource("TileSetAtlasSource_4jle1")
+pattern_0 = SubResource("TileMapPattern_gpom8")
+pattern_1 = SubResource("TileMapPattern_qhcj8")
+pattern_2 = SubResource("TileMapPattern_ii8ri")
+pattern_3 = SubResource("TileMapPattern_4jle1")
+pattern_4 = SubResource("TileMapPattern_veio8")
 
 [node name="Game" type="Node2D"]
 
@@ -141,5 +162,8 @@ tile_map_data = PackedByteArray("AAAAAAwAAAABAAMAAAAAAA0AAAABAAQAAAABAA0AAAACAAQ
 tile_set = SubResource("TileSet_jv3fo")
 
 [node name="Decorations" type="TileMapLayer" parent="Tiles"]
-tile_map_data = PackedByteArray("AAACAAsAAAABAAUAAAALAAkAAAABAAUAAAAPAAoAAAAJAAEAAAAcAAcAAgAAAAAAAAAYAAgAAAAJAAEAAAAfAAgAAAAJAAEAAAAWAAkAAAABAAUAAAAXAAgAAAABAAEAAAAXAAkAAAABAAUAAAADAAsAAAABAAUAAAAFAAsAAAADAAUAAAAhAAkAAAABAAUAAAAgAAkAAAABAAUAAAAiAAgAAAAFAAEAAAAjAAgAAAAFAAEAAAAkAAgAAAAFAAEAAAA=")
+tile_map_data = PackedByteArray("AAACAAsAAAABAAUAAAALAAkAAAABAAUAAAADAAsAAAABAAUAAAAPAAoAAAAJAAEAAAAFAAsAAAADAAUAAAAWAAkAAAABAAUAAAAXAAgAAAABAAEAAAAXAAkAAAABAAUAAAAYAAgAAAAJAAEAAAAcAAcAAgAAAAAAAAAfAAgAAAAJAAEAAAAgAAkAAAABAAUAAAAhAAkAAAABAAUAAAAiAAgAAAAFAAEAAAAjAAgAAAAFAAEAAAAkAAgAAAAFAAEAAAA=")
 tile_set = SubResource("TileSet_gpom8")
+
+[node name="Camera" parent="Tiles" instance=ExtResource("6_qhcj8")]
+position = Vector2(84, 166)

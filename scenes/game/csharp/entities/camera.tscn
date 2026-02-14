@@ -1,0 +1,9 @@
+[gd_scene load_steps=2 format=3 uid="uid://bw2gs826fqind"]
+
+[ext_resource type="Script" uid="uid://bau5s85xq0vh0" path="res://scenes/game/csharp/scripts/Camera.cs" id="1_mtty7"]
+
+[node name="Camera" type="Camera2D"]
+limit_left = 0
+limit_bottom = 208
+position_smoothing_enabled = true
+script = ExtResource("1_mtty7")
