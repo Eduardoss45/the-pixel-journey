@@ -39,7 +39,7 @@ public partial class LevelManager : Node
                 Instruction = dict["instruction"].AsString(),
                 Type = dict.ContainsKey("type") ? dict["type"].AsString() : "variable",
                 RequiredVariable = dict.ContainsKey("requiredVariable") ? dict["requiredVariable"].AsString() : "",
-                ExpectedValue = dict.ContainsKey("expectedValue") ? dict["expectedValue"] : Variant.From(false),
+                ExpectedValue = dict.ContainsKey("expectedValue") ? dict["expectedValue"] : new Variant(),
                 RequiredFunction = dict.ContainsKey("requiredFunction") ? dict["requiredFunction"].AsString() : "",
                 ExpectedReturn = dict.ContainsKey("expectedReturn") ? dict["expectedReturn"] : new Variant(),
                 ValidPatterns = dict.ContainsKey("validPatterns")

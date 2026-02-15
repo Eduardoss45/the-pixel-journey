@@ -1,26 +1,35 @@
 using Godot;
+using System;
 using System.Collections.Generic;
 
 public class LevelData
 {
     public string LevelId { get; set; }
     public string Instruction { get; set; }
-    public string Type { get; set; } = "variable";  // "variable" ou "function"
+    public string Type { get; set; } = "variable";
+
     public string RequiredVariable { get; set; }
     public Variant ExpectedValue { get; set; }
+
     public string RequiredFunction { get; set; }
     public Variant ExpectedReturn { get; set; }
-    public Godot.Collections.Array<int> ValidPatterns { get; set; } = new();
+
+    public Godot.Collections.Array<int> ValidPatterns { get; set; } =
+        new Godot.Collections.Array<int>();
+
     public string Effect { get; set; }
 
-    // Novo método Validate (migra do LevelDefinition)
     public bool Validate(Dictionary<string, Variant> extractedVars)
     {
         if (Type == "variable" && !string.IsNullOrEmpty(RequiredVariable))
         {
             if (!extractedVars.ContainsKey(RequiredVariable))
                 return false;
-            return extractedVars[RequiredVariable].Equals(ExpectedValue);
+
+            return CompareVariants(
+                extractedVars[RequiredVariable],
+                ExpectedValue
+            );
         }
 
         if (Type == "function" && !string.IsNullOrEmpty(RequiredFunction))
@@ -30,26 +39,54 @@ public class LevelData
 
             var returned = extractedVars[RequiredFunction];
 
-            // Se espera um valor específico
             if (ExpectedReturn.VariantType != Variant.Type.Nil)
-                return returned.Equals(ExpectedReturn);
+                return CompareVariants(returned, ExpectedReturn);
 
-            // Se tem lista de padrões válidos
-            if (ValidPatterns.Count > 0 && returned.VariantType == Variant.Type.Int)
-                return ValidPatterns.Contains(returned.AsInt32());
+            if (ValidPatterns.Count > 0)
+            {
+                if (returned.VariantType == Variant.Type.Int ||
+                    returned.VariantType == Variant.Type.Float)
+                {
+                    int value = (int)returned.AsDouble();
+                    return ValidPatterns.Contains(value);
+                }
 
-            // Se só precisa existir
+                return false;
+            }
+
             return true;
         }
 
         return false;
     }
 
-    // Opcional: método para erro personalizado
+    private bool CompareVariants(Variant a, Variant b)
+    {
+        if (IsNumeric(a) && IsNumeric(b))
+        {
+            double da = a.AsDouble();
+            double db = b.AsDouble();
+
+            return Math.Abs(da - db) < 0.0001;
+        }
+
+        return a.Equals(b);
+    }
+
+    private bool IsNumeric(Variant v)
+    {
+        return v.VariantType == Variant.Type.Int ||
+               v.VariantType == Variant.Type.Float;
+    }
+
     public string GetErrorMessage(Variant attemptedReturn)
     {
-        if (Type == "function" && ValidPatterns.Count > 0 && attemptedReturn.VariantType == Variant.Type.Int)
-            return $"Padrão {attemptedReturn.AsInt32()} inválido. Padrões aceitos: {string.Join(", ", ValidPatterns)}";
+        if (Type == "function" && ValidPatterns.Count > 0)
+        {
+            return $"Padrão {attemptedReturn} inválido. " +
+                   $"Padrões aceitos: {string.Join(", ", ValidPatterns)}";
+        }
+
         return "Resultado não atende aos requisitos da lição.";
     }
 }

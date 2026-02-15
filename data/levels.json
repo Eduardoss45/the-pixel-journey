@@ -9,7 +9,7 @@
             "validPatterns": [
                 1
             ],
-            "effect": "activate_platform_pattern"
+            "effect": "set_pattern"
         },
         {
             "levelId": "basics_var_01",

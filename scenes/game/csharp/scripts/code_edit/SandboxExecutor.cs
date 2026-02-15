@@ -3,42 +3,40 @@
 using Godot;
 using Jint;
 using Jint.Native;
-using Jint.Runtime;
 using System;
 using System.Collections.Generic;
 
 public static class SandboxExecutor
 {
-    public static ExecutionResult Execute(string playerCode, LevelData? level)  // Mude para LevelData
+    public static ExecutionResult Execute(string playerCode, LevelData? level)
     {
         try
         {
             var engine = new Jint.Engine(cfg => cfg.Strict());
 
-            string target = level?.RequiredFunction ?? level?.RequiredVariable ?? "_dummy";
+            string target = level?.RequiredFunction
+                            ?? level?.RequiredVariable
+                            ?? "_dummy";
 
             string wrappedCode;
 
-            if (!string.IsNullOrEmpty(level?.RequiredFunction))
+            bool isFunction = !string.IsNullOrEmpty(level?.RequiredFunction);
+
+            if (isFunction)
             {
-                // Wrapper para funções: chama e captura retorno
                 wrappedCode = $@"
                     'use strict';
                     {playerCode}
-
                     let resultado = {target}();
                     resultado;
                 ";
             }
             else
             {
-                // Wrapper para variáveis
                 wrappedCode = $@"
                     'use strict';
                     let {target} = undefined;
-
                     {playerCode}
-
                     {target};
                 ";
             }
@@ -50,15 +48,18 @@ public static class SandboxExecutor
 
             var extracted = new Dictionary<string, Variant>();
 
+            // 1️⃣ Captura retorno
             if (!result.IsUndefined() && !result.IsNull())
             {
                 extracted[target] = ConvertJintToGodotVariant(result);
-                GD.Print($"Retorno capturado para {target}: {extracted[target]}");
+                GD.Print($"Valor capturado para {target}: {extracted[target]}");
             }
 
-            if (engine.Global.HasProperty(target))
+            // 2️⃣ Só captura global se NÃO for função
+            if (!isFunction && engine.Global.HasProperty(target))
             {
                 var globalVal = engine.Global.Get(target);
+
                 if (!globalVal.IsUndefined() && !globalVal.IsNull())
                 {
                     extracted[target] = ConvertJintToGodotVariant(globalVal);
@@ -73,7 +74,7 @@ public static class SandboxExecutor
         }
         catch (Jint.Runtime.JavaScriptException jex)
         {
-            GD.Print($"Erro JS completo: {jex.Message} | Stack: {jex.StackTrace}");
+            GD.Print($"Erro JS completo: {jex.Message}");
             return new ExecutionResult(false, $"Erro JS: {jex.Message}\nLinha: {jex.Location.Start.Line}");
         }
         catch (Exception ex)
@@ -85,20 +86,16 @@ public static class SandboxExecutor
 
     private static Variant ConvertJintToGodotVariant(JsValue value)
     {
-        if (value.IsNumber()) return value.AsNumber();
-        if (value.IsString()) return value.AsString();
-        if (value.IsBoolean()) return value.AsBoolean();
+        if (value.IsNumber())
+            return Variant.From(value.AsNumber());
 
-        try
-        {
-            object? obj = value.ToObject();
-            string safeString = obj?.ToString() ?? string.Empty;
-            return safeString;
-        }
-        catch
-        {
-            return default;
-        }
+        if (value.IsString())
+            return Variant.From(value.AsString());
+
+        if (value.IsBoolean())
+            return Variant.From(value.AsBoolean());
+
+        return new Variant();
     }
 }
 

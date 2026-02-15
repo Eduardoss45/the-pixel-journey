@@ -108,9 +108,16 @@ public partial class CodeEditorUI : Control
             instructionLabel.Modulate = new Color(0.4f, 0.8f, 0.4f);
             instructionLabel.Text = "Correto! " + executionResult.Message;
 
-            TriggerGameSuccess();
+            Variant firstValue = executionResult.Variables != null &&
+                                 executionResult.Variables.Count > 0
+                ? executionResult.Variables.Values.First()
+                : new Variant();
+
+            TriggerGameSuccess(firstValue);
+
             codeBlockParent?.CloseCodeEditor();
         }
+
         else
         {
             Variant firstValue = executionResult.Variables != null &&
@@ -134,11 +141,26 @@ public partial class CodeEditorUI : Control
         instructionLabel.Text = "Edição cancelada.";
     }
 
-    private void TriggerGameSuccess()
+    private void TriggerGameSuccess(Variant value)
     {
         GD.Print($"Nível {currentLevelData?.LevelId ?? "desconhecido"} concluído!");
-        // Aqui você pode disparar animação, sinal, abrir porta etc.
+
+        if (codeBlockParent == null)
+            return;
+
+        if (codeBlockParent.TargetMechanismIds == null)
+            return;
+
+        foreach (string targetId in codeBlockParent.TargetMechanismIds)
+        {
+            ObjectManager.Instance?.ApplyEffect(
+                targetId,
+                currentLevelData.Effect,
+                value
+            );
+        }
     }
+
 
     private void SetupMinimalEditor()
     {

@@ -176,6 +176,7 @@ animations = [{
 layer = 10
 
 [node name="CodeEditorContainer" type="Control" parent="UILayer"]
+visible = false
 layout_mode = 3
 anchors_preset = 0
 offset_right = 400.0
@@ -257,6 +258,8 @@ position = Vector2(144, 120)
 
 [node name="Plataform" parent="Objects" instance=ExtResource("12_g558e")]
 position = Vector2(592, 128)
+MechanismId = "platform_01"
 
 [node name="CodeBlock" parent="Objects" instance=ExtResource("15_v0nip")]
 position = Vector2(512, 96)
+TargetMechanismIds = PackedStringArray("platform_01")
