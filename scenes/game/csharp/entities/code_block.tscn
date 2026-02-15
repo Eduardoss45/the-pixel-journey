@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://j6oerat1odc8"]
+
+[ext_resource type="Script" uid="uid://c7mmtdfkji7n7" path="res://scenes/game/csharp/scripts/CodeBlock.cs" id="1_q7o88"]
+[ext_resource type="Texture2D" uid="uid://bdt3g8n86q6bw" path="res://scenes/game/csharp/materials/Misc. universal tiles/Blocks (16 x 16).png" id="2_7efxp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xpkr5"]
+size = Vector2(16, 15)
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_xurp8"]
+texture = ExtResource("2_7efxp")
+1:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+7:1/0 = 0
+9:1/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+4:3/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+4:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+9:4/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_xuk40"]
+sources/0 = SubResource("TileSetAtlasSource_xurp8")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_cdrdp"]
+size = Vector2(16, 1)
+
+[node name="CodeBlock" type="AnimatableBody2D"]
+script = ExtResource("1_q7o88")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(8, 7.5)
+shape = SubResource("RectangleShape2D_xpkr5")
+
+[node name="TileMapLayer" type="TileMapLayer" parent="."]
+tile_map_data = PackedByteArray(0, 0, 0, 0, 0, 0, 0, 0, 9, 0, 1, 0, 0, 0)
+tile_set = SubResource("TileSet_xuk40")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2(8, 15.5)
+shape = SubResource("RectangleShape2D_cdrdp")

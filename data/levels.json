@@ -1,0 +1,33 @@
+{
+    "levels": [
+        {
+            "levelId": "functions_move_01",
+            "instruction": "Crie uma função ativarPlataforma() que retorne 1 (padrão de subir e descer).",
+            "type": "function",
+            "requiredFunction": "ativarPlataforma",
+            "expectedReturn": 1,
+            "validPatterns": [
+                1
+            ],
+            "effect": "activate_platform_pattern"
+        },
+        {
+            "levelId": "basics_var_01",
+            "instruction": "Declare uma variável chamada 'portaAberta' e defina como true.",
+            "type": "variable",
+            "requiredVariable": "portaAberta",
+            "expectedValue": true,
+            "validPatterns": [],
+            "effect": "open_door"
+        },
+        {
+            "levelId": "condicional_01",
+            "instruction": "Se energia for maior que 50, defina 'plataformaAtiva' como true.",
+            "type": "variable",
+            "requiredVariable": "plataformaAtiva",
+            "expectedValue": true,
+            "validPatterns": [],
+            "effect": "activate_platform"
+        }
+    ]
+}

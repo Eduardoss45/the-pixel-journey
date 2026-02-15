@@ -4,6 +4,7 @@ using System;
 public partial class Player : CharacterBody2D
 {
 	private AnimatedSprite2D pixelAnimation;
+	private bool canMove = true;
 
 	public const float Speed = 80.0f;
 	public const float JumpVelocity = -300.0f;
@@ -16,26 +17,32 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (!canMove && IsOnFloor())
+		{
+			Velocity = Vector2.Zero;
+			UpdateAnimation();
+			return;
+		}
+
 		Vector2 velocity = Velocity;
 
+
 		if (!IsOnFloor())
-		{
 			velocity += GetGravity() * (float)delta;
-		}
+
 
 		if (Input.IsActionJustPressed("jump") && IsOnFloor())
-		{
 			velocity.Y = JumpVelocity;
-		}
 
-		Vector2 direction = Input.GetVector("left", "right", "jump", "down");
-		if (direction != Vector2.Zero)
+		float direction = Input.GetAxis("left", "right");
+
+		if (direction != 0)
 		{
-			velocity.X = direction.X * Speed;
+			velocity.X = direction * Speed;
 		}
 		else
 		{
-			velocity.X = Mathf.MoveToward(Velocity.X, 0, Speed);
+			velocity.X = 0;
 		}
 
 		Velocity = velocity;
@@ -97,5 +104,10 @@ public partial class Player : CharacterBody2D
 		{
 			pixelAnimation.Play(anim);
 		}
+	}
+
+	public void SetCanMove(bool value)
+	{
+		canMove = value;
 	}
 }

@@ -1,0 +1,120 @@
+[gd_scene load_steps=4 format=3 uid="uid://dyaaystddtur"]
+
+[ext_resource type="Script" uid="uid://d1cl2mbnthrax" path="res://scenes/game/csharp/scripts/code_edit/CodeEditorUI.cs" id="1_u3537"]
+[ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="2_u3537"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u3537"]
+
+[node name="Code" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_u3537")
+
+[node name="CodeEdit" type="CodeEdit" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -144.0
+offset_top = -55.0
+offset_right = 144.0
+offset_bottom = 55.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+focus_mode = 1
+theme_override_fonts/font = ExtResource("2_u3537")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = SubResource("StyleBoxEmpty_u3537")
+wrap_mode = 1
+minimap_width = 40
+caret_move_on_right_click = false
+caret_multiple = false
+draw_control_chars = true
+code_completion_enabled = true
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -160.0
+grow_horizontal = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="InstructionLabel" type="Label" parent="MarginContainer"]
+z_index = 1
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_u3537")
+theme_override_font_sizes/font_size = 8
+text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. At nobis atque sit sequi, earum repellendus natus quidem itaque quisquam. Ad commodi sed, iure eaque velit debitis exercitationem laborum ipsa? At."
+horizontal_alignment = 1
+autowrap_mode = 3
+justification_flags = 235
+
+[node name="CancelButton" type="Button" parent="."]
+z_index = 10
+custom_minimum_size = Vector2(60, 15)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 5.0
+offset_top = -25.0
+offset_right = 65.0
+offset_bottom = -5.0
+grow_vertical = 0
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_u3537")
+theme_override_font_sizes/font_size = 8
+text = "Cancelar"
+
+[node name="VerifyButton" type="Button" parent="."]
+z_index = 10
+custom_minimum_size = Vector2(60, 15)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -66.0
+offset_top = -25.0
+offset_right = -6.0
+offset_bottom = -5.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("2_u3537")
+theme_override_font_sizes/font_size = 8
+text = "Verificar"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -104.0
+offset_right = 200.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 0.501961)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
