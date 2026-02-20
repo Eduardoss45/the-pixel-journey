@@ -1,0 +1,162 @@
+[gd_scene load_steps=3 format=3 uid="uid://b8pxytqa3lde0"]
+
+[ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="1_6jx78"]
+[ext_resource type="StyleBox" uid="uid://duisq6j2lao8b" path="res://styles/button.tres" id="2_4tjn8"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 208.0
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+custom_minimum_size = Vector2(400, 208)
+layout_mode = 1
+offset_right = 400.0
+offset_bottom = 208.0
+theme_override_constants/margin_left = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
+custom_minimum_size = Vector2(380, 180)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+
+[node name="ScrollConainer" type="ScrollContainer" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/ScrollConainer"]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ButtonMargin" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin2" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin2"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin3" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin3"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin4" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin4"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin5" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin5"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin6" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin6"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin7" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin7"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin8" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin8"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="ButtonMargin9" type="MarginContainer" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_right = 5
+
+[node name="Option" type="Button" parent="MarginContainer/HBoxContainer/ScrollConainer/VBoxContainer/ButtonMargin9"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("1_6jx78")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("2_4tjn8")
+text = "Option"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("1_6jx78")
+theme_override_font_sizes/normal_font_size = 8
+text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolore doloribus, quae perspiciatis accusamus amet rem deserunt aperiam, expedita nulla veniam optio repellendus consequuntur vitae id ratione molestias dolor, quia sint!
+Atque quod, doloremque libero asperiores consectetur, culpa dolores voluptatem, ex cupiditate voluptas officia laborum earum molestiae voluptates dolore aspernatur illum. Necessitatibus fuga quas libero placeat repellat, iste reprehenderit corporis quasi!
+Dolorum distinctio sequi vitae praesentium consequuntur esse inventore, atque reiciendis accusantium adipisci cupiditate sed ipsum consectetur ratione eum? Eveniet, assumenda? Cupiditate, at sunt! Explicabo ipsa tenetur veritatis voluptate placeat ex?
+Dicta quaerat sint fugiat sit vel sequi ullam, reprehenderit maiores voluptatum porro aperiam odio, nostrum similique repellendus consectetur? Necessitatibus, ad laudantium aperiam veritatis labore dicta temporibus iste sint. Quo, itaque!
+Numquam vel alias distinctio fuga voluptas quis dolorum reiciendis earum eius odio sunt tempora quia explicabo reprehenderit, et perspiciatis maiores provident quo architecto dolore nam! Ipsum optio sapiente molestiae magnam!
+Blanditiis perferendis obcaecati commodi laudantium minus quam, nihil iusto veritatis natus incidunt deleniti exercitationem porro magni harum, et, voluptatem reiciendis. Consequuntur culpa repellat quis doloribus reprehenderit repellendus, quas aut temporibus?"
+vertical_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -104.0
+offset_right = 200.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.0627451)

@@ -1,9 +1,10 @@
-[gd_resource type="TileSet" load_steps=10 format=3 uid="uid://ci6yocecub5y3"]
+[gd_resource type="TileSet" load_steps=12 format=3 uid="uid://ci6yocecub5y3"]
 
 [ext_resource type="Texture2D" uid="uid://crk0d4b1jyus4" path="res://gdscript/sprites/Seasonal Tilesets/1 - Grassland/Terrain (16 x 16).png" id="1_udkip"]
 [ext_resource type="Texture2D" uid="uid://b4rwuf8uohjsb" path="res://gdscript/sprites/Seasonal Tilesets/2 - Autumn Forest/Terrain (16 x 16).png" id="2_8t5ty"]
 [ext_resource type="Texture2D" uid="uid://tsm5t5xdta78" path="res://gdscript/sprites/Seasonal Tilesets/3 - Tropics/Terrain (16 x 16).png" id="3_8t5ty"]
 [ext_resource type="Texture2D" uid="uid://bwo1fwlfqnds" path="res://gdscript/sprites/Seasonal Tilesets/3 - Tropics/undewater_terrain.png" id="4_selcm"]
+[ext_resource type="Texture2D" uid="uid://bdt3g8n86q6bw" path="res://scenes/game/csharp/materials/Misc. universal tiles/Blocks (16 x 16).png" id="5_pi5te"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_x37tn"]
 tile_data = PackedInt32Array(0, 589825, 3, 1, 655361, 3, 2, 786433, 3, 3, 851969, 3)
@@ -273,6 +274,24 @@ texture = ExtResource("4_selcm")
 4:0/0 = 0
 4:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_06kei"]
+texture = ExtResource("5_pi5te")
+1:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+7:1/0 = 0
+9:1/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+4:3/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+4:4/0 = 0
+6:4/0 = 0
+7:4/0 = 0
+9:4/0 = 0
+
 [resource]
 physics_layer_0/collision_layer = 1
 physics_layer_0/collision_mask = 6
@@ -280,4 +299,5 @@ sources/0 = SubResource("TileSetAtlasSource_33cqm")
 sources/1 = SubResource("TileSetAtlasSource_qpk70")
 sources/2 = SubResource("TileSetAtlasSource_selcm")
 sources/3 = SubResource("TileSetAtlasSource_4mtcj")
+sources/4 = SubResource("TileSetAtlasSource_06kei")
 pattern_0 = SubResource("TileMapPattern_x37tn")

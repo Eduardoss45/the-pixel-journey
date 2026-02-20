@@ -1,0 +1,147 @@
+[gd_scene load_steps=5 format=3 uid="uid://bp5lqwpusqgpr"]
+
+[ext_resource type="Script" uid="uid://d1cl2mbnthrax" path="res://scenes/game/csharp/scripts/code_edit/CodeEditorUI.cs" id="1_tktut"]
+[ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="2_f11q3"]
+[ext_resource type="StyleBox" uid="uid://duisq6j2lao8b" path="res://styles/button.tres" id="3_1b8jf"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_tktut"]
+
+[node name="Quiz" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tktut")
+
+[node name="QuizPanel" type="Panel" parent="."]
+layout_mode = 0
+offset_right = 400.0
+offset_bottom = 208.0
+theme_override_styles/panel = SubResource("StyleBoxEmpty_tktut")
+
+[node name="MarginLabel" type="MarginContainer" parent="QuizPanel"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_bottom = -160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="InstructionLabel" type="Label" parent="QuizPanel/MarginLabel"]
+z_index = 1
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "Lorem ipsum dolor sit amet consectetur adipisicing elit. At nobis atque sit sequi, earum repellendus natus quidem itaque quisquam. Ad commodi sed, iure eaque velit debitis exercitationem laborum ipsa? At."
+horizontal_alignment = 1
+autowrap_mode = 3
+justification_flags = 235
+
+[node name="MarginVBox" type="MarginContainer" parent="QuizPanel"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -54.0
+offset_right = 84.0
+offset_bottom = 54.0
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="VBoxContainer" type="VBoxContainer" parent="QuizPanel/MarginVBox"]
+layout_mode = 2
+
+[node name="OptionA" type="CheckBox" parent="QuizPanel/MarginVBox/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "Option"
+
+[node name="OptionB" type="CheckBox" parent="QuizPanel/MarginVBox/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "Option"
+
+[node name="OptionC" type="CheckBox" parent="QuizPanel/MarginVBox/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "Option"
+
+[node name="OptionD" type="CheckBox" parent="QuizPanel/MarginVBox/VBoxContainer"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "Option"
+
+[node name="HBoxContainer" type="HBoxContainer" parent="QuizPanel"]
+z_index = 1
+layout_direction = 2
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -200.0
+offset_top = -40.0
+offset_right = 200.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginScore" type="MarginContainer" parent="QuizPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_right = 10
+
+[node name="ScoreLabel" type="Label" parent="QuizPanel/HBoxContainer/MarginScore"]
+z_index = 10
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+text = "0/0"
+
+[node name="MarginButton" type="MarginContainer" parent="QuizPanel/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 296
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Next" type="Button" parent="QuizPanel/HBoxContainer/MarginButton"]
+z_index = 10
+custom_minimum_size = Vector2(60, 15)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_f11q3")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("3_1b8jf")
+theme_override_styles/normal = ExtResource("3_1b8jf")
+text = "Verificar"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -104.0
+offset_right = 200.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.0627451)

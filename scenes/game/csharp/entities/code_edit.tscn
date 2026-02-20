@@ -1,9 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://dyaaystddtur"]
+[gd_scene load_steps=6 format=3 uid="uid://dyaaystddtur"]
 
 [ext_resource type="Script" uid="uid://d1cl2mbnthrax" path="res://scenes/game/csharp/scripts/code_edit/CodeEditorUI.cs" id="1_u3537"]
 [ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="2_u3537"]
+[ext_resource type="StyleBox" uid="uid://duisq6j2lao8b" path="res://styles/button.tres" id="3_7imxa"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_u3537"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_7imxa"]
+bg_color = Color(0, 0, 0, 0)
+border_color = Color(1, 1, 1, 0)
 
 [node name="Code" type="Control"]
 layout_mode = 3
@@ -79,6 +84,8 @@ grow_vertical = 0
 size_flags_horizontal = 4
 theme_override_fonts/font = ExtResource("2_u3537")
 theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = SubResource("StyleBoxFlat_7imxa")
+theme_override_styles/normal = ExtResource("3_7imxa")
 text = "Cancelar"
 
 [node name="VerifyButton" type="Button" parent="."]
@@ -98,6 +105,8 @@ grow_horizontal = 0
 grow_vertical = 0
 theme_override_fonts/font = ExtResource("2_u3537")
 theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("3_7imxa")
+theme_override_styles/normal = ExtResource("3_7imxa")
 text = "Verificar"
 
 [node name="ColorRect" type="ColorRect" parent="."]
@@ -114,9 +123,4 @@ offset_bottom = 104.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-color = Color(0, 0, 0, 0.501961)
-
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+color = Color(1, 1, 1, 0.0627451)
