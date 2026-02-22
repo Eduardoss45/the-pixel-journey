@@ -1,17 +1,15 @@
 using Godot;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public partial class QuizUI : Control
 {
 	private Label instructionLabel;
 	private CheckBox optionA, optionB, optionC, optionD;
 	private Button verifyButton;
-	private Label scoreLabel;
+	private Label progressLabel;
 
 	private List<QuizQuestion> pendingQuestions = new();
-	private int currentIndex = 0;
 	private int correctCount = 0;
 	private int totalQuestions = 0;
 	private string selectedKey = null;
@@ -30,7 +28,7 @@ public partial class QuizUI : Control
 		optionC = GetNode<CheckBox>("QuizPanel/MarginVBox/VBoxContainer/OptionC");
 		optionD = GetNode<CheckBox>("QuizPanel/MarginVBox/VBoxContainer/OptionD");
 		verifyButton = GetNode<Button>("QuizPanel/HBoxContainer/MarginButton/Next");
-		scoreLabel = GetNode<Label>("QuizPanel/HBoxContainer/MarginScore/ScoreLabel");
+		progressLabel = GetNode<Label>("QuizPanel/HBoxContainer/MarginScore/ScoreLabel");
 
 		optionA.Toggled += pressed => OnOptionToggled("A", pressed);
 		optionB.Toggled += pressed => OnOptionToggled("B", pressed);
@@ -40,10 +38,8 @@ public partial class QuizUI : Control
 		verifyButton.Pressed += OnVerifyPressed;
 
 		playerNode = GetNodeOrNull(PlayerPath);
-
 		Visible = false;
 	}
-
 
 	public void StartQuiz(Godot.Collections.Array<QuizQuestion> questions, Action onComplete)
 	{
@@ -55,30 +51,31 @@ public partial class QuizUI : Control
 
 		totalQuestions = pendingQuestions.Count;
 		correctCount = 0;
-		currentIndex = 0;
-
-		UpdateScore();
-		LoadCurrentQuestion();
 
 		Visible = true;
 		playerNode?.Call("SetCanMove", false);
-	}
 
+		if (pendingQuestions.Count == 0)
+		{
+			instructionLabel.Text = "Nenhuma pergunta configurada para este quiz.";
+			verifyButton.Disabled = true;
+			UpdateVerifyStyle();
+			UpdateProgress();
+			return;
+		}
 
-	public void StartQuiz()
-	{
-
+		LoadCurrentQuestion();
 	}
 
 	private void LoadCurrentQuestion()
 	{
-		if (currentIndex >= pendingQuestions.Count)
+		if (pendingQuestions.Count == 0)
 		{
 			FinishQuiz();
 			return;
 		}
 
-		var q = pendingQuestions[currentIndex];
+		var q = pendingQuestions[0];
 		instructionLabel.Text = q.Instruction;
 
 		var opts = q.GetOptionsDict();
@@ -99,6 +96,7 @@ public partial class QuizUI : Control
 		UpdateVerifyStyle();
 		selectedKey = null;
 		selectedCheckBox = null;
+		UpdateProgress();
 	}
 
 	private void OnOptionToggled(string key, bool pressed)
@@ -114,7 +112,10 @@ public partial class QuizUI : Control
 
 	private void OnVerifyPressed()
 	{
-		var q = pendingQuestions[currentIndex];
+		if (pendingQuestions.Count == 0)
+			return;
+
+		var q = pendingQuestions[0];
 		bool isCorrect = selectedKey == q.CorrectOption;
 
 		ResetOptionColors();
@@ -125,30 +126,23 @@ public partial class QuizUI : Control
 				selectedCheckBox.AddThemeColorOverride("font_color", Colors.Green);
 
 			correctCount++;
-			pendingQuestions.RemoveAt(currentIndex);
+			pendingQuestions.RemoveAt(0);
 		}
 		else
 		{
 			if (selectedCheckBox != null)
-			{
 				selectedCheckBox.AddThemeColorOverride("font_color", Colors.Red);
 
-				var timer = GetTree().CreateTimer(1.2);
-				timer.Timeout += () =>
-				{
-					if (IsInstanceValid(selectedCheckBox))
-						selectedCheckBox.RemoveThemeColorOverride("font_color");
-				};
-			}
+			pendingQuestions.RemoveAt(0);
+			pendingQuestions.Add(q);
 
-			var wrong = pendingQuestions[currentIndex];
-			pendingQuestions.RemoveAt(currentIndex);
-			pendingQuestions.Add(wrong);
+			var timer = GetTree().CreateTimer(1.2);
+			timer.Timeout += () =>
+			{
+				if (IsInstanceValid(selectedCheckBox))
+					selectedCheckBox.RemoveThemeColorOverride("font_color");
+			};
 		}
-
-		UpdateScore();
-
-		currentIndex = currentIndex % pendingQuestions.Count;
 
 		if (pendingQuestions.Count == 0)
 		{
@@ -164,9 +158,7 @@ public partial class QuizUI : Control
 	private void ResetOptionColors()
 	{
 		foreach (var cb in new[] { optionA, optionB, optionC, optionD })
-		{
 			cb.RemoveThemeColorOverride("font_color");
-		}
 	}
 
 	private void UpdateVerifyStyle()
@@ -176,15 +168,24 @@ public partial class QuizUI : Control
 			: new Color(0.2f, 1.0f, 0.3f);
 	}
 
-	private void UpdateScore()
+	private void UpdateProgress()
 	{
-		scoreLabel.Text = $"{correctCount} / {totalQuestions}";
+		if (totalQuestions <= 0)
+		{
+			progressLabel.Text = "Etapas: 0/0";
+			return;
+		}
+
+		int visibleStep = Mathf.Clamp(correctCount + 1, 1, totalQuestions);
+		progressLabel.Text = $"Etapas: {visibleStep}/{totalQuestions}";
 	}
 
 	private void FinishQuiz()
 	{
-		instructionLabel.Text = $"Concluído! Acertos: {correctCount} de {totalQuestions}";
+		instructionLabel.Text = $"Concluido! Acertos: {correctCount} de {totalQuestions}";
 		verifyButton.Disabled = true;
+		UpdateVerifyStyle();
+		progressLabel.Text = $"Etapas: {totalQuestions}/{totalQuestions}";
 
 		var timer = GetTree().CreateTimer(2.0);
 		timer.Timeout += () =>
@@ -195,15 +196,16 @@ public partial class QuizUI : Control
 		};
 	}
 
-
 	public void Reset()
 	{
 		pendingQuestions.Clear();
-		currentIndex = 0;
 		correctCount = 0;
 		totalQuestions = 0;
 		selectedKey = null;
+		selectedCheckBox = null;
 		ResetOptionColors();
 		verifyButton.Disabled = true;
+		UpdateVerifyStyle();
+		UpdateProgress();
 	}
 }

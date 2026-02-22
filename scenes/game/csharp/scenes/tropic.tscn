@@ -269,6 +269,10 @@ position = Vector2(144, 120)
 
 [node name="Objects" type="Node2D" parent="."]
 
+[node name="QuizBlock" parent="Objects" instance=ExtResource("18_soxva")]
+position = Vector2(128, 128)
+QuestionIds = PackedInt32Array(3, 5)
+
 [node name="Plataform" parent="Objects" instance=ExtResource("12_g558e")]
 position = Vector2(592, 128)
 MechanismId = "platform_01"
@@ -276,6 +280,3 @@ MechanismId = "platform_01"
 [node name="CodeBlock" parent="Objects" instance=ExtResource("15_v0nip")]
 position = Vector2(512, 96)
 TargetMechanismIds = PackedStringArray("platform_01")
-
-[node name="QuizBlock" parent="." instance=ExtResource("18_soxva")]
-position = Vector2(128, 128)

@@ -5,8 +5,8 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 {
 	[Export] public string MechanismId { get; set; } = "";
 	[Export] public float MoveSpeed = 80.0f;
-	[Export] public int MovementPatternIndex = 0; // 0 = parado, 1 = vertical, 2 = horizontal
-	[Export] public float Distance = 75f;         // distância do movimento
+	[Export] public int MovementPatternIndex = 0;
+	[Export] public float Distance = 75f;
 	[Export] public bool StartActive = false;
 
 	private bool isMoving = false;
@@ -66,7 +66,7 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 		targetPosition = startPosition + currentOffset;
 	}
 
-	// ========= API Pública =========
+
 
 	public void SetMovementPattern(int index)
 	{

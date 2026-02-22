@@ -55,7 +55,7 @@ public partial class Player : CharacterBody2D
 		Idle,
 		Walking,
 		Jumping,
-		// ! ADICIONAR OUTROS ESTADOS SE NECESSÁRIO
+
 	}
 
 	private PlayerState currentState = PlayerState.Idle;

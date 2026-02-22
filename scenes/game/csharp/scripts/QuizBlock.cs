@@ -1,14 +1,15 @@
 using Godot;
 using System;
+using System.Linq;
 
 public partial class QuizBlock : AnimatableBody2D
 {
 	[Export] public string[] TargetMechanismIds;
-	[Export] public string QuizSetId { get; set; } = "js_basics_01";
+	[Export] public string QuizSetId { get; set; } = "1";
+	[Export] public int[] QuestionIds { get; set; } = Array.Empty<int>();
+	[Export(PropertyHint.Range, "0,99,1")] public int MaxQuestions { get; set; } = 0;
 	[Export] public float BounceHeight = 10f;
 	[Export] public float BounceDuration = 0.6f;
-
-	[Export] public Godot.Collections.Array<QuizQuestion> Questions { get; set; } = new();
 
 	private Vector2 _startPosition;
 	private bool _isBouncing = false;
@@ -44,6 +45,7 @@ public partial class QuizBlock : AnimatableBody2D
 	{
 		if (body is not Player player) return;
 		if (_isBouncing) return;
+		if (QuizManager.Instance != null && !QuizManager.Instance.TryAcquireQuiz(this)) return;
 
 		_playerThatHit = player;
 		TriggerBlock();
@@ -76,12 +78,29 @@ public partial class QuizBlock : AnimatableBody2D
 
 	private void OpenQuiz()
 	{
-		if (quizUI == null) return;
+		if (quizUI == null)
+		{
+			QuizManager.Instance?.ReleaseQuiz(this);
+			return;
+		}
+
+		var idsDebug = QuestionIds == null || QuestionIds.Length == 0
+			? "nenhum"
+			: string.Join(", ", QuestionIds.Select(x => x.ToString()));
+
+		var questions = QuizManager.Instance?.GetQuestions(QuizSetId, QuestionIds, MaxQuestions) ?? new Godot.Collections.Array<QuizQuestion>();
+		if (questions.Count == 0)
+		{
+			GD.PrintErr($"QuizBlock '{Name}': sem perguntas para abrir o quiz.");
+			QuizManager.Instance?.ReleaseQuiz(this);
+			return;
+		}
+		GD.Print($"QuizBlock '{Name}': carregou {questions.Count} pergunta(s). IDs: {idsDebug}. MaxQuestions: {MaxQuestions}");
 
 		quizContainer.Visible = true;
 		quizContainer.ProcessMode = ProcessModeEnum.Inherit;
 
-		quizUI.StartQuiz(Questions, () =>
+		quizUI.StartQuiz(questions, () =>
 		{
 			CloseQuiz();
 		});
@@ -104,6 +123,7 @@ public partial class QuizBlock : AnimatableBody2D
 		}
 
 		quizUI?.Reset();
+		QuizManager.Instance?.ReleaseQuiz(this);
 	}
 
 	private Control FindQuizContainer()
@@ -112,6 +132,6 @@ public partial class QuizBlock : AnimatableBody2D
 		if (candidates.Count > 0)
 			return candidates[0] as Control;
 
-		return GetTree().Root.GetNodeOrNull<Control>("Tropic/UILayer/QuizContainer");
+		return GetTree().Root.FindChild("QuizContainer", true, false) as Control;
 	}
 }

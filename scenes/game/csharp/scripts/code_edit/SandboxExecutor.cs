@@ -48,14 +48,14 @@ public static class SandboxExecutor
 
             var extracted = new Dictionary<string, Variant>();
 
-            // 1️⃣ Captura retorno
+
             if (!result.IsUndefined() && !result.IsNull())
             {
                 extracted[target] = ConvertJintToGodotVariant(result);
                 GD.Print($"Valor capturado para {target}: {extracted[target]}");
             }
 
-            // 2️⃣ Só captura global se NÃO for função
+
             if (!isFunction && engine.Global.HasProperty(target))
             {
                 var globalVal = engine.Global.Get(target);

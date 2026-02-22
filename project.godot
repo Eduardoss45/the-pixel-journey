@@ -20,6 +20,7 @@ config/icon="res://icon.svg"
 LevelManager="*res://manager/LevelManager.cs"
 ObjectManager="*res://manager/ObjectManager.cs"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
+QuizManager="*res://manager/QuizManager.cs"
 
 [dialogic]
 
