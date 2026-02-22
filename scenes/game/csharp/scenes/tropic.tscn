@@ -1,7 +1,8 @@
-[gd_scene load_steps=27 format=4 uid="uid://bgfcjcumo7ro"]
+[gd_scene load_steps=29 format=4 uid="uid://bgfcjcumo7ro"]
 
 [ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_vpdwy"]
 [ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://gdscript/tiles/terrain.tres" id="2_a52c3"]
+[ext_resource type="PackedScene" uid="uid://bp5lqwpusqgpr" path="res://scenes/game/csharp/entities/quiz.tscn" id="2_yv88y"]
 [ext_resource type="Texture2D" uid="uid://dysaa7gytolk2" path="res://scenes/game/csharp/materials/Tropics/Tropics_entities (16 x 16).png" id="3_05uis"]
 [ext_resource type="Texture2D" uid="uid://c6sdet154jihj" path="res://scenes/game/csharp/materials/Grassland/Extra_plants (16 x 16).png" id="3_ppxjd"]
 [ext_resource type="Texture2D" uid="uid://j8yojxucbmev" path="res://scenes/game/csharp/materials/Misc. universal tiles/Flowers (16 x 16).png" id="4_f56oi"]
@@ -16,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://c51d7ja011qrt" path="res://scenes/game/csharp/entities/plataform.tscn" id="12_g558e"]
 [ext_resource type="PackedScene" uid="uid://j6oerat1odc8" path="res://scenes/game/csharp/entities/code_block.tscn" id="15_v0nip"]
 [ext_resource type="PackedScene" uid="uid://dyaaystddtur" path="res://scenes/game/csharp/entities/code_edit.tscn" id="16_8x57x"]
+[ext_resource type="PackedScene" uid="uid://wheo4k13uc2s" path="res://scenes/game/csharp/entities/quiz_block.tscn" id="18_soxva"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_ngdc5"]
 tile_data = PackedInt32Array(0, 3, 0)
@@ -186,6 +188,17 @@ size_flags_horizontal = 4
 [node name="Code" parent="UILayer/CodeEditorContainer" instance=ExtResource("16_8x57x")]
 layout_mode = 1
 
+[node name="QuizContainer" type="Control" parent="UILayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 208.0
+size_flags_horizontal = 4
+
+[node name="Quiz" parent="UILayer/QuizContainer" instance=ExtResource("2_yv88y")]
+layout_mode = 1
+
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
 position = Vector2(8, 168)
 
@@ -263,3 +276,6 @@ MechanismId = "platform_01"
 [node name="CodeBlock" parent="Objects" instance=ExtResource("15_v0nip")]
 position = Vector2(512, 96)
 TargetMechanismIds = PackedStringArray("platform_01")
+
+[node name="QuizBlock" parent="." instance=ExtResource("18_soxva")]
+position = Vector2(128, 128)

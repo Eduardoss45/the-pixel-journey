@@ -1,5 +1,15 @@
-# Notas
+# Quiz
 
-## Rafa:
-
-> Sobre o design do pixel eu vou estar fazendo e te enviando, eu tinha separado naqueles documentos um design que pensei que fosse dar pra usar mas ele ta meio fora de ordem acho... o começo do jogo era aquilo que eu tinha falado que tem a tela inicial e uma cutscene que eu ainda to terminando de fazer, depois o pixel ia para a primeira cena que eu tinha feito no canva, conversa com o byte o diálogo que eu tinha colocado no documento de diálogo entre os personagens e ai o pixel podia seguir em frente depois disso. Pixel vai pra cena 2, byte explica algumas coisas para que a pessoa possa responder as perguntas sobre oq o byte ensinou, esses quizes são para matar os mini bugs que tem pelo mapa(são os bixinhos rosas) que coloquei no mapa, pensei em matar eles pulando em cima como o Mário e ai abria uma tela com 2 perguntas e precisa acertar as duas para poder continuar. Esqueci de falar antes mas pixel tem inicialmente 3 vidas, e ao longo do jogo pode ser encontrado caixinhas de leite para recuperar 1 ponto de vida e ele perde 1 ponto de vida caso erre uma pergunta. Os ensinamentos de byte ficam em uma "pasta" no canto superior direito como coloquei no canva, é um resumo das coisas que byte falou. Eu vou também fazer uma animação do pixel levando dano caso erre a pergunta. Ele só pode passar de nível caso derrote todos os bugs na fase, são 3, com 2 perguntas cada. Eu preciso fazer o diálogo certinho do css e java script caso for fazer o jogo todo, pq no diálogo tem apenas até a parte do HTML que é a primeira fase bem desenvolvida. As fases tem uma trilha sonora também de pokemon, ja que não vou publicar o jogo, apenas apresentar pra CNPQ eu achei interessante usar, ta tudo organizado numa pasta também. E ai caso for fazer o jogo até o final, teria o boss, que seria aquila ideia que me mostrou de completar o código e ai no final mais um diálogo de despedida do pixel e byte e o jogo termina
+- QuizManager
+  > Deve apontar para o arquivo onde estão listadas a quest e repassar o controle para o quizBlock, este arquivo é carregado automaticamente na inicialização
+- QuizBlock
+  > Abrir o quiz ao colidir
+  > Não pode háver conflitos entre outros QuizBlocks (mais de um)
+  > Controlar o conteúdo exibido no quiz de forma modular
+  > Podemos passar um array de ids (quiz multi-etapas) ou apenas um, esses dados vem do QuizManager
+- QuizUI
+  > Exibir label para a pergunta
+  > Exibir 4 opções com escolha única
+  > Feedback visual ao verificar a resposta e em caso de erro repetir a mesma pergunta novamente até que seja acertada e por fim finalizar o quiz
+  > Não tem botão de sair, e é obrigatório
+  > Tem um contador que diz a quantidade de etapas que o quiz possui

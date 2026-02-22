@@ -16,7 +16,6 @@ public partial class CodeEditorUI : Control
 
     public override void _Ready()
     {
-        // Cache do LevelManager (autoload esperado em /root/LevelManager)
         levelManager = GetNodeOrNull<LevelManager>("/root/LevelManager");
 
         if (levelManager == null)

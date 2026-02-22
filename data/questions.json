@@ -1,0 +1,87 @@
+[
+    {
+        "id": 1,
+        "instruction": "Qual é o tipo de dado de uma variável declarada com o valor `null` em JavaScript?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "undefined",
+            "object",
+            "null",
+            "string"
+        ],
+        "correctOption": "B"
+    },
+    {
+        "id": 2,
+        "instruction": "Qual das opções abaixo NÃO permite reatribuição de valor após a declaração?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "var x = 10;",
+            "let y = 20;",
+            "const z = 30;",
+            "function teste() {}"
+        ],
+        "correctOption": "C"
+    },
+    {
+        "id": 3,
+        "instruction": "Qual é o escopo principal da declaração `var` em JavaScript?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "escopo de bloco",
+            "escopo de função",
+            "escopo global apenas",
+            "escopo de módulo"
+        ],
+        "correctOption": "B"
+    },
+    {
+        "id": 4,
+        "instruction": "O que acontece se você tentar acessar uma variável declarada com `let` antes da linha de declaração no mesmo bloco?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "retorna undefined",
+            "retorna o valor inicial (hoisting)",
+            "gera ReferenceError (Temporal Dead Zone)",
+            "o valor é null"
+        ],
+        "correctOption": "C"
+    },
+    {
+        "id": 5,
+        "instruction": "Qual das alternativas mostra uma declaração correta de uma constante que não pode ser reatribuída?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "const PI = 3.14; PI = 3.1415;",
+            "let nome = 'João'; nome = 'Maria';",
+            "const idade = 25;",
+            "var total = 100; total += 50;"
+        ],
+        "correctOption": "C"
+    }
+]
