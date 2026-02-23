@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="A Jornada de Pixel"
-run/main_scene="uid://capjntsubujmb"
+run/main_scene="uid://deshic5wummff"
 config/features=PackedStringArray("4.4", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -21,6 +21,7 @@ LevelManager="*res://manager/LevelManager.cs"
 ObjectManager="*res://manager/ObjectManager.cs"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 QuizManager="*res://manager/QuizManager.cs"
+GameSession="*res://manager/GameSession.cs"
 
 [dialogic]
 

@@ -5,9 +5,16 @@ public partial class Player : CharacterBody2D
 {
 	private AnimatedSprite2D pixelAnimation;
 	private bool canMove = true;
+	private bool deathTriggered;
 
 	public const float Speed = 80.0f;
 	public const float JumpVelocity = -300.0f;
+
+	[Signal]
+	public delegate void DeathTriggeredEventHandler();
+
+	[Export]
+	public float DeathYThreshold { get; set; } = 300.0f;
 
 	public override void _Ready()
 	{
@@ -17,7 +24,7 @@ public partial class Player : CharacterBody2D
 
 	public override void _PhysicsProcess(double delta)
 	{
-		if (!canMove && IsOnFloor())
+		if (!canMove)
 		{
 			Velocity = Vector2.Zero;
 			UpdateAnimation();
@@ -48,6 +55,13 @@ public partial class Player : CharacterBody2D
 		Velocity = velocity;
 		MoveAndSlide();
 		UpdateAnimation();
+
+		if (!deathTriggered && GlobalPosition.Y > DeathYThreshold)
+		{
+			deathTriggered = true;
+			canMove = false;
+			EmitSignal(SignalName.DeathTriggered);
+		}
 	}
 
 	private enum PlayerState

@@ -1,0 +1,113 @@
+[gd_scene load_steps=17 format=3 uid="uid://cmcbk3v0udkqh"]
+
+[ext_resource type="Texture2D" uid="uid://bf0u7ygr1vtgo" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle17.png" id="1_255iw"]
+[ext_resource type="Texture2D" uid="uid://b0eptjrjewf3u" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle18.png" id="2_7aejc"]
+[ext_resource type="Texture2D" uid="uid://b5niob0vtsdky" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle19.png" id="3_8lh5m"]
+[ext_resource type="Texture2D" uid="uid://c4x3joqb4edh2" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle20.png" id="4_42vnr"]
+[ext_resource type="Texture2D" uid="uid://cvogpjbj4mqcx" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle21.png" id="5_1ni4u"]
+[ext_resource type="Texture2D" uid="uid://btxvy202ubwxm" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle22.png" id="6_h72oh"]
+[ext_resource type="Texture2D" uid="uid://b5jrib2vt56v3" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle23.png" id="7_ui528"]
+[ext_resource type="Texture2D" uid="uid://dpy5hq6qbyd4a" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle24.png" id="8_3bgtg"]
+[ext_resource type="Texture2D" uid="uid://b05l4y8cmbeml" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle25.png" id="9_mt26c"]
+[ext_resource type="Texture2D" uid="uid://irmfm0lkvw4g" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle26.png" id="10_dmklt"]
+[ext_resource type="Texture2D" uid="uid://c4wv5fwytslu6" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Idle27.png" id="11_2elm6"]
+[ext_resource type="Texture2D" uid="uid://c3gkatbqajx0d" path="res://scenes/game/csharp/materials/Mario World/Gameover Screen/Game_Over_Screen_Intro16.png" id="12_nuomt"]
+[ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="13_8lh5m"]
+[ext_resource type="StyleBox" uid="uid://duisq6j2lao8b" path="res://styles/button.tres" id="14_42vnr"]
+[ext_resource type="Script" uid="uid://csw3cdib1t7w0" path="res://scenes/game/csharp/scripts/GameOver.cs" id="15_52ly7"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_1sruf"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_255iw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_7aejc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_8lh5m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_42vnr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_1ni4u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_h72oh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_ui528")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_3bgtg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_mt26c")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_dmklt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_2elm6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_nuomt")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 3
+script = ExtResource("15_52ly7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+z_index = 1
+sprite_frames = SubResource("SpriteFrames_1sruf")
+autoplay = "default"
+frame_progress = 0.632859
+
+[node name="Button" type="Button" parent="."]
+z_index = 1
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -29.0
+offset_top = 56.0
+offset_right = 31.0
+offset_bottom = 81.0
+grow_horizontal = 2
+grow_vertical = 0
+size_flags_vertical = 4
+theme_override_fonts/font = ExtResource("13_8lh5m")
+theme_override_font_sizes/font_size = 8
+theme_override_styles/focus = ExtResource("14_42vnr")
+theme_override_styles/normal = ExtResource("14_42vnr")
+text = "Restart"
+
+[node name="ColorRect" type="ColorRect" parent="."]
+custom_minimum_size = Vector2(400, 208)
+layout_mode = 2
+offset_left = -200.0
+offset_top = -104.0
+offset_right = 200.0
+offset_bottom = 104.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)

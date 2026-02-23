@@ -33,6 +33,11 @@ public partial class QuizManager : Node
             _activeQuizBlock = null;
     }
 
+    public void ResetRuntimeState()
+    {
+        _activeQuizBlock = null;
+    }
+
     public Godot.Collections.Array<QuizQuestion> GetQuestions(
         string quizSetId,
         int[] questionIds,

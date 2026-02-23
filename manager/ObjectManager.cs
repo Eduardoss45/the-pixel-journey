@@ -5,7 +5,7 @@ public partial class ObjectManager : Node
 {
     public static ObjectManager Instance { get; private set; }
 
-    private Dictionary<string, IGameMechanism> mechanisms = new();
+    private readonly Dictionary<string, IGameMechanism> mechanisms = new();
 
     public override void _Ready()
     {
@@ -27,10 +27,15 @@ public partial class ObjectManager : Node
     {
         if (!mechanisms.ContainsKey(mechanismId))
         {
-            GD.PrintErr($"MechanismId '{mechanismId}' não encontrado.");
+            GD.PrintErr($"MechanismId '{mechanismId}' nao encontrado.");
             return;
         }
 
         mechanisms[mechanismId].ApplyEffect(effectId, value);
+    }
+
+    public void ResetRuntimeState()
+    {
+        mechanisms.Clear();
     }
 }

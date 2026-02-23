@@ -1,10 +1,11 @@
-[gd_scene load_steps=29 format=4 uid="uid://bgfcjcumo7ro"]
+[gd_scene load_steps=35 format=4 uid="uid://bgfcjcumo7ro"]
 
 [ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_vpdwy"]
 [ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://gdscript/tiles/terrain.tres" id="2_a52c3"]
 [ext_resource type="PackedScene" uid="uid://bp5lqwpusqgpr" path="res://scenes/game/csharp/entities/quiz.tscn" id="2_yv88y"]
 [ext_resource type="Texture2D" uid="uid://dysaa7gytolk2" path="res://scenes/game/csharp/materials/Tropics/Tropics_entities (16 x 16).png" id="3_05uis"]
 [ext_resource type="Texture2D" uid="uid://c6sdet154jihj" path="res://scenes/game/csharp/materials/Grassland/Extra_plants (16 x 16).png" id="3_ppxjd"]
+[ext_resource type="PackedScene" uid="uid://b8pxytqa3lde0" path="res://scenes/game/csharp/entities/information-menu.tscn" id="3_urevt"]
 [ext_resource type="Texture2D" uid="uid://j8yojxucbmev" path="res://scenes/game/csharp/materials/Misc. universal tiles/Flowers (16 x 16).png" id="4_f56oi"]
 [ext_resource type="Texture2D" uid="uid://bgrl3t66ev10r" path="res://scenes/game/csharp/materials/Misc. universal tiles/House (112 x 96).png" id="5_18pb3"]
 [ext_resource type="Texture2D" uid="uid://cbxirlfatmk72" path="res://scenes/game/csharp/materials/Tropics/Background parts/5 - Sky_color.png" id="6_18pb3"]
@@ -18,6 +19,11 @@
 [ext_resource type="PackedScene" uid="uid://j6oerat1odc8" path="res://scenes/game/csharp/entities/code_block.tscn" id="15_v0nip"]
 [ext_resource type="PackedScene" uid="uid://dyaaystddtur" path="res://scenes/game/csharp/entities/code_edit.tscn" id="16_8x57x"]
 [ext_resource type="PackedScene" uid="uid://wheo4k13uc2s" path="res://scenes/game/csharp/entities/quiz_block.tscn" id="18_soxva"]
+[ext_resource type="Script" uid="uid://dtjugf27naaid" path="res://scenes/game/csharp/scripts/Hud.cs" id="19_rb23q"]
+[ext_resource type="Texture2D" uid="uid://ctsc0uwkn4x0k" path="res://scenes/game/csharp/materials/Custom/book.png" id="19_v46i7"]
+[ext_resource type="Texture2D" uid="uid://c8va3gccw54g7" path="res://scenes/game/csharp/materials/Mario World/Heart_Ui.png" id="20_rb23q"]
+[ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="22_7n8yu"]
+[ext_resource type="AudioStream" uid="uid://d1lpukv5e8xwb" path="res://assets/music/trilha-sonora.ogg" id="23_q5nrf"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_ngdc5"]
 tile_data = PackedInt32Array(0, 3, 0)
@@ -199,8 +205,18 @@ size_flags_horizontal = 4
 [node name="Quiz" parent="UILayer/QuizContainer" instance=ExtResource("2_yv88y")]
 layout_mode = 1
 
+[node name="MenuContainer" type="Control" parent="UILayer"]
+visible = false
+layout_mode = 3
+anchors_preset = 0
+offset_right = 400.0
+offset_bottom = 208.0
+size_flags_horizontal = 4
+
+[node name="Menu" parent="UILayer/MenuContainer" instance=ExtResource("3_urevt")]
+
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
-position = Vector2(8, 168)
+position = Vector2(7, 167)
 
 [node name="Terrain" type="TileMapLayer" parent="."]
 position = Vector2(32, 96)
@@ -280,3 +296,57 @@ MechanismId = "platform_01"
 [node name="CodeBlock" parent="Objects" instance=ExtResource("15_v0nip")]
 position = Vector2(512, 96)
 TargetMechanismIds = PackedStringArray("platform_01")
+
+[node name="HUD" type="CanvasLayer" parent="."]
+script = ExtResource("19_rb23q")
+
+[node name="Book" type="TextureButton" parent="HUD"]
+offset_left = 5.0
+offset_top = 5.0
+offset_right = 21.0
+offset_bottom = 21.0
+texture_normal = ExtResource("19_v46i7")
+
+[node name="ControlBox" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -24.0
+offset_bottom = 20.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="HBoxNumberLifes" type="HBoxContainer" parent="HUD/ControlBox"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -7.0
+offset_top = -9.0
+offset_right = 8.0
+offset_bottom = 9.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="LifeSprite" type="Sprite2D" parent="HUD/ControlBox/HBoxNumberLifes"]
+position = Vector2(-8.5, 10)
+scale = Vector2(1.45833, 1.625)
+texture = ExtResource("20_rb23q")
+
+[node name="CountLifes" type="Label" parent="HUD/ControlBox/HBoxNumberLifes"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_fonts/font = ExtResource("22_7n8yu")
+theme_override_font_sizes/font_size = 11
+text = "5"
+
+[node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("23_q5nrf")
+autoplay = true
+parameters/looping = true
