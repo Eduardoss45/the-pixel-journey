@@ -24,7 +24,7 @@ public partial class Hud : CanvasLayer
 	public override void _Ready()
 	{
 		livesLabel = GetNodeOrNull<Label>(LivesLabelPath);
-		player = GetNodeOrNull<Player>(PlayerPath);
+		player = ResolvePlayer();
 		bookButton = GetNodeOrNull<TextureButton>(BookButtonPath);
 		menuContainer = GetNodeOrNull<Control>(MenuContainerPath);
 		informationMenu = GetNodeOrNull<InformationMenu>(InformationMenuPath);
@@ -57,6 +57,22 @@ public partial class Hud : CanvasLayer
 		informationMenu?.CloseMenu();
 
 		EnsureFadeOverlay();
+	}
+
+	private Player ResolvePlayer()
+	{
+		if (PlayerPath != null && !PlayerPath.IsEmpty)
+		{
+			var byPath = GetNodeOrNull<Player>(PlayerPath);
+			if (byPath != null)
+				return byPath;
+		}
+
+		var players = GetTree().GetNodesInGroup("Player");
+		if (players.Count > 0 && players[0] is Player groupedPlayer)
+			return groupedPlayer;
+
+		return GetTree().Root.FindChild("Player", true, false) as Player;
 	}
 
 	public override void _ExitTree()

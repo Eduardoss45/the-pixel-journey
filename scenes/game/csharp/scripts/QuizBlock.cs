@@ -5,6 +5,8 @@ using System.Linq;
 public partial class QuizBlock : AnimatableBody2D
 {
 	[Export] public string[] TargetMechanismIds;
+	[Export(PropertyHint.Enum, "activate,stop,set_pattern")] public string SuccessEffectId { get; set; } = "activate";
+	[Export(PropertyHint.Range, "0,4,1")] public int SuccessPatternValue { get; set; } = 0;
 	[Export] public string QuizSetId { get; set; } = "1";
 	[Export] public int[] QuestionIds { get; set; } = Array.Empty<int>();
 	[Export(PropertyHint.Range, "0,99,1")] public int MaxQuestions { get; set; } = 0;
@@ -102,6 +104,7 @@ public partial class QuizBlock : AnimatableBody2D
 
 		quizUI.StartQuiz(questions, () =>
 		{
+			TriggerGameSuccess();
 			CloseQuiz();
 		});
 
@@ -124,6 +127,33 @@ public partial class QuizBlock : AnimatableBody2D
 
 		quizUI?.Reset();
 		QuizManager.Instance?.ReleaseQuiz(this);
+	}
+
+	private void TriggerGameSuccess()
+	{
+		if (TargetMechanismIds == null || TargetMechanismIds.Length == 0)
+			return;
+
+		Variant? effectValue = null;
+		if (SuccessEffectId == "set_pattern")
+		{
+			if (SuccessPatternValue <= 0)
+			{
+				GD.PrintErr($"QuizBlock '{Name}': SuccessPatternValue invalido para set_pattern.");
+				return;
+			}
+
+			effectValue = SuccessPatternValue;
+		}
+
+		foreach (var mechanismId in TargetMechanismIds)
+		{
+			string targetId = mechanismId?.Trim() ?? string.Empty;
+			if (string.IsNullOrEmpty(targetId))
+				continue;
+
+			ObjectManager.Instance?.ApplyEffect(targetId, SuccessEffectId, effectValue);
+		}
 	}
 
 	private Control FindQuizContainer()

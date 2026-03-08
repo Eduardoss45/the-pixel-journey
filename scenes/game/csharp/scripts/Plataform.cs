@@ -11,6 +11,7 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 
 	private bool isMoving = false;
 	private bool goingToTarget = true;
+	private bool isOneWay = false; 
 
 	private Vector2 startPosition;
 	private Vector2 targetPosition;
@@ -30,6 +31,10 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 			SetVerticalLoop();
 		else if (MovementPatternIndex == 2)
 			SetHorizontalLoop();
+		else if (MovementPatternIndex == 3)
+			SetOneWayUp();
+		else if (MovementPatternIndex == 4)
+			SetOneWayDown();
 
 		isMoving = StartActive;
 	}
@@ -46,7 +51,17 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 		if (toTarget.Length() < 1.0f)
 		{
 			Position = currentTarget;
-			goingToTarget = !goingToTarget;
+			
+			if (isOneWay)
+			{
+				
+				isMoving = false;
+			}
+			else
+			{
+				
+				goingToTarget = !goingToTarget;
+			}
 			return;
 		}
 
@@ -58,21 +73,41 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 	{
 		currentOffset = new Vector2(0, -Distance);
 		targetPosition = startPosition + currentOffset;
+		isOneWay = false;
 	}
 
 	private void SetHorizontalLoop()
 	{
 		currentOffset = new Vector2(Distance, 0);
 		targetPosition = startPosition + currentOffset;
+		isOneWay = false;
+	}
+
+	
+	private void SetOneWayUp()
+	{
+		currentOffset = new Vector2(0, -Distance);
+		targetPosition = startPosition + currentOffset;
+		isOneWay = true;
+		goingToTarget = true; 
+	}
+
+	
+	private void SetOneWayDown()
+	{
+		currentOffset = new Vector2(0, Distance);
+		targetPosition = startPosition + currentOffset;
+		isOneWay = true;
+		goingToTarget = true; 
 	}
 
 
 
 	public void SetMovementPattern(int index)
 	{
-		if (index != 1 && index != 2)
+		if (index < 1 || index > 4)
 		{
-			GD.PushError("Padrão inválido. Use 1 (vertical) ou 2 (horizontal).");
+			GD.PushError("Padrão inválido. Use 1 (vertical loop), 2 (horizontal loop), 3 (one-way up) ou 4 (one-way down).");
 			return;
 		}
 
@@ -80,8 +115,12 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 
 		if (index == 1)
 			SetVerticalLoop();
-		else
+		else if (index == 2)
 			SetHorizontalLoop();
+		else if (index == 3)
+			SetOneWayUp();
+		else if (index == 4)
+			SetOneWayDown();
 
 		goingToTarget = true;
 		isMoving = true;
