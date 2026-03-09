@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=4 uid="uid://bgfcjcumo7ro"]
+[gd_scene load_steps=36 format=4 uid="uid://bgfcjcumo7ro"]
 
 [ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_vpdwy"]
 [ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://gdscript/tiles/terrain.tres" id="2_a52c3"]
@@ -24,6 +24,7 @@
 [ext_resource type="Texture2D" uid="uid://c8va3gccw54g7" path="res://scenes/game/csharp/materials/Mario World/Heart_Ui.png" id="20_rb23q"]
 [ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="22_7n8yu"]
 [ext_resource type="AudioStream" uid="uid://d1lpukv5e8xwb" path="res://assets/music/trilha-sonora.ogg" id="23_q5nrf"]
+[ext_resource type="PackedScene" uid="uid://bes2p46skt65p" path="res://scenes/game/csharp/entities/skeleton.tscn" id="25_a6yk7"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_ngdc5"]
 tile_data = PackedInt32Array(0, 3, 0)
@@ -295,10 +296,10 @@ position = Vector2(592, 128)
 MechanismId = "platform_01"
 
 [node name="Plataform2" parent="Objects" instance=ExtResource("12_g558e")]
-position = Vector2(912, 192)
+position = Vector2(912, 208)
 MechanismId = "platform_02"
 MovementPatternIndex = 3
-Distance = 66.0
+Distance = 82.0
 
 [node name="CodeBlock" parent="Objects" instance=ExtResource("15_v0nip")]
 position = Vector2(512, 96)
@@ -357,3 +358,6 @@ text = "5"
 stream = ExtResource("23_q5nrf")
 autoplay = true
 parameters/looping = true
+
+[node name="Skeleton" parent="." instance=ExtResource("25_a6yk7")]
+position = Vector2(696, 48)
