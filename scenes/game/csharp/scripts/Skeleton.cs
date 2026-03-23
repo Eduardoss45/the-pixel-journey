@@ -34,6 +34,8 @@ public partial class Skeleton : CharacterBody2D
 	private float _throwCooldownRemaining = 0.0f;
 	private float _reactionTimerRemaining = 0.0f;
 	private Node2D _reactionTargetPlayer;
+	private bool _deadAttached;
+	private bool _shouldAttachAfterMove;
 
 	public override void _Ready()
 	{
@@ -44,12 +46,16 @@ public partial class Skeleton : CharacterBody2D
 		_groundDetector = GetNode<RayCast2D>("GroundDetector");
 		_playerDetector = GetNode<RayCast2D>("PlayerDetector");
 		_boneStartPosition = GetNode<Node2D>("BoneStartPosition");
-
 		GoToWalkState();
 	}
 
 	public override void _PhysicsProcess(double delta)
 	{
+		if (GlobalPosition.Y > 178f)
+		{
+			ZIndex = -4;
+		}
+
 		if (_throwCooldownRemaining > 0.0f)
 		{
 			_throwCooldownRemaining = Mathf.Max(0.0f, _throwCooldownRemaining - (float)delta);
@@ -77,10 +83,18 @@ public partial class Skeleton : CharacterBody2D
 				HurtState();
 				break;
 			case SkeletonState.Dead:
+				Velocity = new Vector2(0.0f, Velocity.Y);
+				_shouldAttachAfterMove = true;
 				break;
 		}
 
 		MoveAndSlide();
+
+		if (_shouldAttachAfterMove)
+		{
+			AttachToMovingPlatformIfNeeded();
+			_shouldAttachAfterMove = false;
+		}
 	}
 
 	private void GoToWalkState()
@@ -162,6 +176,9 @@ public partial class Skeleton : CharacterBody2D
 
 	public void TakeDamage()
 	{
+		if (_status == SkeletonState.Hurt || _status == SkeletonState.Dead)
+			return;
+
 		GoToHurtState();
 	}
 
@@ -231,7 +248,7 @@ public partial class Skeleton : CharacterBody2D
 
 	private void _on_hitbox_body_entered(Node2D body)
 	{
-		if (_status == SkeletonState.Hurt || !body.IsInGroup("Player"))
+		if ((_status == SkeletonState.Hurt || _status == SkeletonState.Dead) || !body.IsInGroup("Player"))
 		{
 			return;
 		}
@@ -264,12 +281,49 @@ public partial class Skeleton : CharacterBody2D
 		if (_anim.Animation == "hurt")
 		{
 			_status = SkeletonState.Dead;
-			Velocity = Vector2.Zero;
-			_bodyCollision.SetDeferred(CollisionShape2D.PropertyName.Disabled, true);
+			Velocity = new Vector2(0.0f, Velocity.Y);
 			_wallDetector.Enabled = false;
 			_groundDetector.Enabled = false;
 			_playerDetector.Enabled = false;
-			SetPhysicsProcess(false);
 		}
+	}
+
+	private void AttachToMovingPlatformIfNeeded()
+	{
+		if (_deadAttached || !IsOnFloor())
+			return;
+
+		var floor = GetFloorColliderFromSlides();
+		if (floor is not AnimatableBody2D movingPlatform)
+			return;
+
+		var currentParent = GetParent();
+		if (currentParent == movingPlatform)
+		{
+			_deadAttached = true;
+			return;
+		}
+
+		Vector2 global = GlobalPosition;
+		currentParent?.RemoveChild(this);
+		movingPlatform.AddChild(this);
+		GlobalPosition = global;
+		_deadAttached = true;
+	}
+
+	private Node2D GetFloorColliderFromSlides()
+	{
+		int count = GetSlideCollisionCount();
+		for (int i = 0; i < count; i++)
+		{
+			var collision = GetSlideCollision(i);
+			if (collision == null)
+				continue;
+
+			if (collision.GetNormal().Dot(Vector2.Up) > 0.7f)
+				return collision.GetCollider() as Node2D;
+		}
+
+		return null;
 	}
 }

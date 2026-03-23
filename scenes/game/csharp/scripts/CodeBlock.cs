@@ -84,7 +84,11 @@ public partial class CodeBlock : AnimatableBody2D
 		}
 
 		codeEditorContainer.Visible = true;
-		codeEditorContainer.ProcessMode = ProcessModeEnum.Inherit;
+		codeEditorContainer.ProcessMode = ProcessModeEnum.Always;
+
+		var tree = GetTree();
+		if (tree != null)
+			tree.Paused = true;
 
 		var editorUI = codeEditorContainer.GetNodeOrNull<CodeEditorUI>("Code");
 		if (editorUI != null)
@@ -132,6 +136,10 @@ public partial class CodeBlock : AnimatableBody2D
 		{
 			editorUI.codeBlockParent = null;
 		}
+
+		var tree = GetTree();
+		if (tree != null)
+			tree.Paused = false;
 	}
 
 	private Control FindCodeEditorContainer()

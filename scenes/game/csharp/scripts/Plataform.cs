@@ -8,6 +8,7 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 	[Export] public int MovementPatternIndex = 0;
 	[Export] public float Distance = 75f;
 	[Export] public bool StartActive = false;
+	[Export] public bool StartWithPhysics = false;
 
 	private bool isMoving = false;
 	private bool goingToTarget = true;
@@ -16,12 +17,15 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 	private Vector2 startPosition;
 	private Vector2 targetPosition;
 	private Vector2 currentOffset;
+	private CollisionShape2D collisionShape;
 
 
 	public override void _Ready()
 	{
 		startPosition = Position;
 		SyncToPhysics = true;
+
+		collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
 
 		MechanismId = MechanismId.Trim();
 
@@ -37,6 +41,7 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 			SetOneWayDown();
 
 		isMoving = StartActive;
+		SetPhysicsEnabled(StartWithPhysics || StartActive);
 	}
 
 
@@ -129,17 +134,27 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 	public void ActivateMovement()
 	{
 		isMoving = true;
+		SetPhysicsEnabled(true);
 	}
 
 	public void Stop()
 	{
 		isMoving = false;
+		SetPhysicsEnabled(false);
 	}
 
 	public void ReturnToStart()
 	{
 		Position = startPosition;
 		goingToTarget = true;
+	}
+
+	private void SetPhysicsEnabled(bool enabled)
+	{
+		if (collisionShape == null)
+			return;
+
+		collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, !enabled);
 	}
 
 	public void ApplyEffect(string effectId, Variant? value = null)

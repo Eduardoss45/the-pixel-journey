@@ -100,7 +100,11 @@ public partial class QuizBlock : AnimatableBody2D
 		GD.Print($"QuizBlock '{Name}': carregou {questions.Count} pergunta(s). IDs: {idsDebug}. MaxQuestions: {MaxQuestions}");
 
 		quizContainer.Visible = true;
-		quizContainer.ProcessMode = ProcessModeEnum.Inherit;
+		quizContainer.ProcessMode = ProcessModeEnum.Always;
+
+		var tree = GetTree();
+		if (tree != null)
+			tree.Paused = true;
 
 		quizUI.StartQuiz(questions, () =>
 		{
@@ -127,6 +131,10 @@ public partial class QuizBlock : AnimatableBody2D
 
 		quizUI?.Reset();
 		QuizManager.Instance?.ReleaseQuiz(this);
+
+		var tree = GetTree();
+		if (tree != null)
+			tree.Paused = false;
 	}
 
 	private void TriggerGameSuccess()

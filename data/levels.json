@@ -13,12 +13,12 @@
         },
         {
             "levelId": "basics_var_01",
-            "instruction": "Declare uma variável chamada 'portaAberta' e defina como true.",
+            "instruction": "Declare uma variável chamada 'moverPlataforma' e defina como true.",
             "type": "variable",
-            "requiredVariable": "portaAberta",
+            "requiredVariable": "moverPlataforma",
             "expectedValue": true,
             "validPatterns": [],
-            "effect": "open_door"
+            "effect": "activate"
         },
         {
             "levelId": "condicional_01",

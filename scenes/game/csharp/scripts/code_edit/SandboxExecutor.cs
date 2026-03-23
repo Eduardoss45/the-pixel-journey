@@ -14,9 +14,13 @@ public static class SandboxExecutor
         {
             var engine = new Jint.Engine(cfg => cfg.Strict());
 
-            string target = level?.RequiredFunction
-                            ?? level?.RequiredVariable
-                            ?? "_dummy";
+            string target;
+            if (!string.IsNullOrEmpty(level?.RequiredFunction))
+                target = level.RequiredFunction;
+            else if (!string.IsNullOrEmpty(level?.RequiredVariable))
+                target = level.RequiredVariable;
+            else
+                target = "_dummy";
 
             string wrappedCode;
 
@@ -35,7 +39,6 @@ public static class SandboxExecutor
             {
                 wrappedCode = $@"
                     'use strict';
-                    let {target} = undefined;
                     {playerCode}
                     {target};
                 ";

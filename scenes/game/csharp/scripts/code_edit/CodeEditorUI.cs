@@ -65,7 +65,7 @@ public partial class CodeEditorUI : Control
         }
 
         Visible = true;
-        ProcessMode = ProcessModeEnum.Inherit;
+        ProcessMode = ProcessModeEnum.Always;
 
         codeEdit.Clear();
         codeEdit.GrabFocus();

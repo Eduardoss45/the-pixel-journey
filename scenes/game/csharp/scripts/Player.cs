@@ -62,6 +62,11 @@ public partial class Player : CharacterBody2D
 			canMove = false;
 			EmitSignal(SignalName.DeathTriggered);
 		}
+
+		if (GlobalPosition.Y > 178f)
+		{
+			ZIndex = -4;
+		}
 	}
 
 	private enum PlayerState
