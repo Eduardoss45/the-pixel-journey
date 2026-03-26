@@ -6,8 +6,8 @@
 [ext_resource type="Texture2D" uid="uid://b0stqywpv4c0x" path="res://scenes/game/csharp/sprites/penguin/Jump (16 x 16).png" id="3_gu5w0"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e8xqm"]
-radius = 6.0
-height = 16.0
+radius = 0.258226
+height = 16.3485
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_gnm85"]
 atlas = ExtResource("2_e7cob")
@@ -115,6 +115,8 @@ animations = [{
 script = ExtResource("1_n2u3w")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2.38419e-07)
+scale = Vector2(27.108, 0.856348)
 shape = SubResource("CapsuleShape2D_e8xqm")
 
 [node name="PixelAnimation" type="AnimatedSprite2D" parent="."]

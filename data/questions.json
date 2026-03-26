@@ -9,8 +9,8 @@
             "D"
         ],
         "optionValues": [
-            "Que a variável ainda não foi criada",
-            "Que a variável está vazia de propósito",
+            "Que a variável ainda não foi declarada",
+            "Que a variável está intencionalmente sem valor",
             "Que a variável é um número",
             "Que a variável é um texto"
         ],
@@ -62,7 +62,7 @@
         "optionValues": [
             "O código funciona normalmente",
             "A variável vira null",
-            "O código dá erro",
+            "O código gera um erro",
             "A variável vira 0"
         ],
         "correctOption": "C"

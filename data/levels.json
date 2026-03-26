@@ -2,7 +2,7 @@
     "levels": [
         {
             "levelId": "functions_move_01",
-            "instruction": "Crie uma função ativarPlataforma() que retorne 1 (padrão de subir e descer).",
+            "instruction": "Crie uma função chamada ativarPlataforma() que retorne 1 (padrão de movimento de subir e descer).",
             "type": "function",
             "requiredFunction": "ativarPlataforma",
             "expectedReturn": 1,
@@ -13,7 +13,7 @@
         },
         {
             "levelId": "basics_var_01",
-            "instruction": "Declare uma variável chamada 'moverPlataforma' e defina como true.",
+            "instruction": "Declare uma variável chamada 'moverPlataforma' e defina-a como true.",
             "type": "variable",
             "requiredVariable": "moverPlataforma",
             "expectedValue": true,
@@ -22,7 +22,7 @@
         },
         {
             "levelId": "condicional_01",
-            "instruction": "Se energia for maior que 50, defina 'plataformaAtiva' como true.",
+            "instruction": "Se a energia for maior que 50, defina 'plataformaAtiva' como true.",
             "type": "variable",
             "requiredVariable": "plataformaAtiva",
             "expectedValue": true,

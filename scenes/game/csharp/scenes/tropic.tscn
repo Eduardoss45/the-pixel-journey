@@ -197,7 +197,7 @@ animations = [{
 [node name="Tropic" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
-position = Vector2(3064, 168)
+position = Vector2(3328, 72)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10
@@ -469,4 +469,9 @@ position = Vector2(2104, 160)
 position = Vector2(2824, 112)
 
 [node name="Boss" parent="." instance=ExtResource("28_ndntf")]
-position = Vector2(3304, 144)
+position = Vector2(3640, 144)
+Speed = 75.0
+ContactKnockbackX = 30.0
+StompVerticalAllowance = 3.0
+StompMinDownwardVelocity = 5.0
+StompQuestionIds = PackedInt32Array(3, 4, 5)

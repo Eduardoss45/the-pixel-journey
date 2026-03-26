@@ -1,18 +1,18 @@
 [
 	{
-		"title": "Variaveis",
-		"content": "Variaveis guardam dados usados no jogo e no codigo. Prefira let para valores que mudam e const para valores fixos.\n\nComo resolver desafios:\n- Leia o nome exato da variavel pedida.\n- Defina o tipo de valor correto (texto, numero, boolean).\n- Evite trocar maiusculas e minusculas.\n\nReferencia:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types"
+		"title": "Variáveis",
+		"content": "Variáveis guardam dados usados no jogo e no código. Prefira let para valores que mudam e const para valores fixos.\n\nComo resolver desafios:\n- Leia o nome exato da variável pedida.\n- Defina o tipo de valor correto (texto, número, booleano).\n- Evite trocar maiúsculas e minúsculas.\n\nReferência:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Grammar_and_types"
 	},
 	{
 		"title": "Condicionais",
-		"content": "Condicionais controlam decisoes: se algo acontecer, outra acao e executada. O formato basico e if (condicao) { ... }.\n\nComo resolver desafios:\n- Verifique qual condicao precisa ser verdadeira.\n- Compare corretamente valores com >, <, ===.\n- Ative a variavel solicitada dentro do bloco if.\n\nReferencia:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else"
+		"content": "Condicionais controlam decisões: se algo acontecer, outra ação é executada. O formato básico é if (condição) { ... }.\n\nComo resolver desafios:\n- Verifique qual condição precisa ser verdadeira.\n- Compare corretamente valores com >, <, ===.\n- Ative a variável solicitada dentro do bloco if.\n\nReferência:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/if...else"
 	},
 	{
-		"title": "Funcoes",
-		"content": "Funcoes agrupam comandos reutilizaveis. Elas podem retornar valores com return.\n\nComo resolver desafios:\n- Crie a funcao com o nome exato pedido.\n- Retorne o valor esperado pelo puzzle.\n- Teste variacoes pequenas ate o mecanismo responder.\n\nReferencia:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
+		"title": "Funções",
+		"content": "Funções agrupam comandos reutilizáveis. Elas podem retornar valores com return.\n\nComo resolver desafios:\n- Crie a função com o nome exato pedido.\n- Retorne o valor esperado pelo puzzle.\n- Teste variações pequenas até o mecanismo responder.\n\nReferência:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Functions"
 	},
 	{
 		"title": "Dicas de Quiz",
-		"content": "No quiz, foque nas palavras-chave do enunciado.\n\nComo resolver desafios:\n- Elimine alternativas impossiveis primeiro.\n- Compare let, const e null com calma.\n- Se tiver duvida, releia a pergunta antes de confirmar.\n\nReferencia:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript"
+		"content": "No quiz, foque nas palavras-chave do enunciado.\n\nComo resolver desafios:\n- Elimine alternativas impossíveis primeiro.\n- Compare let, const e null com calma.\n- Se tiver dúvida, releia a pergunta antes de confirmar.\n\nReferência:\n- https://developer.mozilla.org/en-US/docs/Web/JavaScript"
 	}
 ]

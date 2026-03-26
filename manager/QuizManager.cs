@@ -10,7 +10,7 @@ public partial class QuizManager : Node
     private readonly Dictionary<string, QuizQuestion> _questionsById = new();
     private readonly Dictionary<string, List<QuizQuestion>> _questionsBySet = new();
     private readonly List<QuizQuestion> _allQuestions = new();
-    private QuizBlock _activeQuizBlock;
+    private Node _activeQuizOwner;
 
     public override void _Ready()
     {
@@ -18,24 +18,24 @@ public partial class QuizManager : Node
         LoadQuestions();
     }
 
-    public bool TryAcquireQuiz(QuizBlock block)
+    public bool TryAcquireQuiz(Node owner)
     {
-        if (_activeQuizBlock != null && IsInstanceValid(_activeQuizBlock))
-            return _activeQuizBlock == block;
+        if (_activeQuizOwner != null && IsInstanceValid(_activeQuizOwner))
+            return _activeQuizOwner == owner;
 
-        _activeQuizBlock = block;
+        _activeQuizOwner = owner;
         return true;
     }
 
-    public void ReleaseQuiz(QuizBlock block)
+    public void ReleaseQuiz(Node owner)
     {
-        if (_activeQuizBlock == block)
-            _activeQuizBlock = null;
+        if (_activeQuizOwner == owner)
+            _activeQuizOwner = null;
     }
 
     public void ResetRuntimeState()
     {
-        _activeQuizBlock = null;
+        _activeQuizOwner = null;
     }
 
     public Godot.Collections.Array<QuizQuestion> GetQuestions(
