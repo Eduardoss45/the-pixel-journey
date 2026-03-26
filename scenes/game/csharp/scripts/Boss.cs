@@ -1,8 +1,8 @@
 using Godot;
 
-public partial class Skeleton : CharacterBody2D
+public partial class Boss : CharacterBody2D
 {
-	private enum SkeletonState
+	private enum BossState
 	{
 		Walk,
 		Attack,
@@ -28,7 +28,7 @@ public partial class Skeleton : CharacterBody2D
 	private RayCast2D _playerDetector = null!;
 	private Node2D _boneStartPosition = null!;
 
-	private SkeletonState _status;
+	private BossState _status;
 	private int _direction = 1;
 	private bool _canThrow = true;
 	private float _throwCooldownRemaining = 0.0f;
@@ -73,16 +73,16 @@ public partial class Skeleton : CharacterBody2D
 
 		switch (_status)
 		{
-			case SkeletonState.Walk:
+			case BossState.Walk:
 				WalkState();
 				break;
-			case SkeletonState.Attack:
+			case BossState.Attack:
 				AttackState();
 				break;
-			case SkeletonState.Hurt:
+			case BossState.Hurt:
 				HurtState();
 				break;
-			case SkeletonState.Dead:
+			case BossState.Dead:
 				Velocity = new Vector2(0.0f, Velocity.Y);
 				_shouldAttachAfterMove = true;
 				break;
@@ -99,14 +99,14 @@ public partial class Skeleton : CharacterBody2D
 
 	private void GoToWalkState()
 	{
-		_status = SkeletonState.Walk;
+		_status = BossState.Walk;
 		_anim.Play("walk");
 		_reactionTargetPlayer = null;
 	}
 
 	private void GoToAttackState()
 	{
-		_status = SkeletonState.Attack;
+		_status = BossState.Attack;
 		_anim.Play("attack");
 		Velocity = Vector2.Zero;
 		_canThrow = true;
@@ -114,7 +114,7 @@ public partial class Skeleton : CharacterBody2D
 
 	private void GoToHurtState()
 	{
-		_status = SkeletonState.Hurt;
+		_status = BossState.Hurt;
 		_anim.Play("hurt");
 		_hitbox.SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
 		Velocity = Vector2.Zero;
@@ -176,7 +176,7 @@ public partial class Skeleton : CharacterBody2D
 
 	public void TakeDamage()
 	{
-		if (_status == SkeletonState.Hurt || _status == SkeletonState.Dead)
+		if (_status == BossState.Hurt || _status == BossState.Dead)
 			return;
 
 		GoToHurtState();
@@ -248,7 +248,7 @@ public partial class Skeleton : CharacterBody2D
 
 	private void _on_hitbox_body_entered(Node2D body)
 	{
-		if ((_status == SkeletonState.Hurt || _status == SkeletonState.Dead) || !body.IsInGroup("Player"))
+		if ((_status == BossState.Hurt || _status == BossState.Dead) || !body.IsInGroup("Player"))
 		{
 			return;
 		}
@@ -280,7 +280,7 @@ public partial class Skeleton : CharacterBody2D
 
 		if (_anim.Animation == "hurt")
 		{
-			_status = SkeletonState.Dead;
+			_status = BossState.Dead;
 			Velocity = new Vector2(0.0f, Velocity.Y);
 			_wallDetector.Enabled = false;
 			_groundDetector.Enabled = false;

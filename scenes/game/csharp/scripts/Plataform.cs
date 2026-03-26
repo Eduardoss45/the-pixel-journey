@@ -70,8 +70,22 @@ public partial class Plataform : AnimatableBody2D, IGameMechanism
 			return;
 		}
 
-		Vector2 direction = toTarget.Normalized();
-		Position += direction * MoveSpeed * (float)delta;
+		float step = MoveSpeed * (float)delta;
+		Position = Position.MoveToward(currentTarget, step);
+
+		if (Position.DistanceTo(currentTarget) < 0.5f)
+		{
+			Position = currentTarget;
+
+			if (isOneWay)
+			{
+				isMoving = false;
+			}
+			else
+			{
+				goingToTarget = !goingToTarget;
+			}
+		}
 	}
 
 	private void SetVerticalLoop()

@@ -1,0 +1,206 @@
+[gd_scene load_steps=28 format=3 uid="uid://jyqtr8ygan33"]
+
+[ext_resource type="Script" uid="uid://cmi6ig457x1hm" path="res://scenes/game/csharp/scripts/Skeleton.cs" id="1_k14ak"]
+[ext_resource type="Texture2D" uid="uid://dxe513bl700fo" path="res://scenes/game/csharp/sprites/boss/Falling (32 x 32).png" id="2_hutpo"]
+[ext_resource type="Texture2D" uid="uid://dctatqbvgedn0" path="res://scenes/game/csharp/sprites/boss/Idle (32 x 32).png" id="3_08ibb"]
+[ext_resource type="Texture2D" uid="uid://bqkd5g7gn2a4q" path="res://scenes/game/csharp/sprites/boss/Jumping (32 x 32).png" id="4_xbiq0"]
+[ext_resource type="Texture2D" uid="uid://tnmmt6a0okfl" path="res://scenes/game/csharp/sprites/boss/Jump_Start (32 x 32).png" id="5_wwrea"]
+[ext_resource type="Texture2D" uid="uid://y7no8g7yijo7" path="res://scenes/game/csharp/sprites/boss/Hurt_And_Recovery (32 x 32).png" id="6_4sp4l"]
+[ext_resource type="Texture2D" uid="uid://dwgdx780k3iga" path="res://scenes/game/csharp/sprites/boss/Idle_Blink (32 x 32).png" id="7_2b4n1"]
+[ext_resource type="Texture2D" uid="uid://dq1fo3vq5rujj" path="res://scenes/game/csharp/sprites/boss/Falling_Start (32 x 32).png" id="8_itbc1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_svuyc"]
+atlas = ExtResource("2_hutpo")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ijv6h"]
+atlas = ExtResource("3_08ibb")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kuiv5"]
+atlas = ExtResource("3_08ibb")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2gpnx"]
+atlas = ExtResource("3_08ibb")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2fwei"]
+atlas = ExtResource("3_08ibb")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cpogk"]
+atlas = ExtResource("3_08ibb")
+region = Rect2(128, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3oh1w"]
+atlas = ExtResource("4_xbiq0")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rqgm2"]
+atlas = ExtResource("5_wwrea")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x5a3f"]
+atlas = ExtResource("5_wwrea")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ffeqg"]
+atlas = ExtResource("6_4sp4l")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lxpv7"]
+atlas = ExtResource("6_4sp4l")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ykk6y"]
+atlas = ExtResource("7_2b4n1")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jqxlj"]
+atlas = ExtResource("7_2b4n1")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y32lt"]
+atlas = ExtResource("7_2b4n1")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e3v7k"]
+atlas = ExtResource("8_itbc1")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_exx71"]
+atlas = ExtResource("8_itbc1")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vdeju"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_svuyc")
+}],
+"loop": true,
+"name": &"falling",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ijv6h")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kuiv5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2gpnx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2fwei")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cpogk")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3oh1w")
+}],
+"loop": true,
+"name": &"jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rqgm2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x5a3f")
+}],
+"loop": true,
+"name": &"start_jump",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ffeqg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lxpv7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ykk6y")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jqxlj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y32lt")
+}],
+"loop": true,
+"name": &"stunned",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e3v7k")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_exx71")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 4.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fpmxe"]
+radius = 7.0
+height = 26.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yag7t"]
+size = Vector2(12, 26)
+
+[node name="Boss" type="CharacterBody2D"]
+collision_layer = 4
+script = ExtResource("1_k14ak")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vdeju")
+animation = &"walk"
+autoplay = "idle"
+frame_progress = 0.814389
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2(2, 3)
+shape = SubResource("CapsuleShape2D_fpmxe")
+
+[node name="Hitbox" type="Area2D" parent="." groups=["Enemies"]]
+visible = false
+collision_layer = 4
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+position = Vector2(2, 3)
+shape = SubResource("RectangleShape2D_yag7t")
+debug_color = Color(0.967938, 0, 0.471078, 0.42)
+
+[node name="WallDetector" type="RayCast2D" parent="."]
+position = Vector2(0, 8)
+target_position = Vector2(11, 0)
+
+[node name="GroundDetector" type="RayCast2D" parent="."]
+position = Vector2(8, -8)
+target_position = Vector2(0, 19)
+
+[node name="PlayerDetector" type="RayCast2D" parent="."]
+position = Vector2(0, 8)
+target_position = Vector2(72, 0)
+collision_mask = 3
+
+[node name="BoneStartPosition" type="Node2D" parent="."]
+position = Vector2(8, 0)
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
