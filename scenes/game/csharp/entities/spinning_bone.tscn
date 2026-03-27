@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dugy5qie6lpek"]
 
-[ext_resource type="Texture2D" path="res://scenes/game/csharp/sprites/skeleton/Spinning_Bone (16 x 16).png" id="1_bkob1"]
-[ext_resource type="Script" path="res://scenes/game/csharp/scripts/SpinningBone.cs" id="1_njpw1"]
+[ext_resource type="Texture2D" uid="uid://duqvdfpkre6cw" path="res://scenes/game/csharp/sprites/skeleton/Spinning_Bone (16 x 16).png" id="1_bkob1"]
+[ext_resource type="Script" uid="uid://widviockdg6e" path="res://scenes/game/csharp/scripts/SpinningBone.cs" id="1_njpw1"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_njpw1"]
 radius = 4.12311

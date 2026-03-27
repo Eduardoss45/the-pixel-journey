@@ -1,0 +1,60 @@
+[gd_scene load_steps=8 format=3 uid="uid://dw1cd6vgj5qi3"]
+
+[ext_resource type="Script" uid="uid://cjq0dgmrojmin" path="res://scenes/game/csharp/scripts/FireBall.cs" id="1_qjy8i"]
+[ext_resource type="Texture2D" uid="uid://ngst6cfb4gkv" path="res://scenes/game/csharp/sprites/boss/Fireball_Projectile (16 x 16).png" id="2_qjy8i"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_njpw1"]
+radius = 4.12311
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_175hd"]
+atlas = ExtResource("2_qjy8i")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sxf7d"]
+atlas = ExtResource("2_qjy8i")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hd733"]
+atlas = ExtResource("2_qjy8i")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cjyle"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_175hd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sxf7d")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hd733")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="FireBall" type="Area2D" groups=["LethalArea"]]
+collision_layer = 16
+collision_mask = 3
+script = ExtResource("1_qjy8i")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_njpw1")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, 4)
+scale = Vector2(1.125, 1.125)
+sprite_frames = SubResource("SpriteFrames_cjyle")
+autoplay = "default"
+frame_progress = 0.146274
+
+[node name="SelfDestructTimer" type="Timer" parent="."]
+wait_time = 10.0
+one_shot = true
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="SelfDestructTimer" to="." method="_on_self_destruct_timer_timeout"]

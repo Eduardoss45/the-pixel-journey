@@ -3,6 +3,9 @@ using System;
 
 public partial class Boss : CharacterBody2D
 {
+	private static readonly PackedScene FireBallScene =
+		GD.Load<PackedScene>("res://scenes/game/csharp/entities/fire_ball.tscn");
+
 	private enum BossState
 	{
 		Idle,
@@ -15,25 +18,27 @@ public partial class Boss : CharacterBody2D
 	[Export] public float ChaseRange { get; set; } = 240.0f;
 	[Export] public float LoseRange { get; set; } = 300.0f;
 	[Export] public float Speed { get; set; } = 85.0f;
-	[Export] public float JumpVelocity { get; set; } = -260.0f;
-	[Export] public float JumpHeightThreshold { get; set; } = 18.0f;
-	[Export] public float JumpHorizontalRange { get; set; } = 96.0f;
-	[Export] public float StopDistance { get; set; } = 28.0f;
+	[Export] public float StopDistance { get; set; } = 100.0f;
 	[Export] public float ReactionDelaySeconds { get; set; } = 0.35f;
-	[Export] public float AttackJumpRange { get; set; } = 96.0f;
-	[Export] public float AttackJumpCooldownSeconds { get; set; } = 1.4f;
-	[Export] public float AttackJumpVelocity { get; set; } = -260.0f;
-	[Export] public float AttackJumpHorizontalSpeed { get; set; } = 110.0f;
-	[Export] public float AttackJumpAirAcceleration { get; set; } = 500.0f;
-	[Export] public float AttackJumpLeadTime { get; set; } = 0.25f;
-	[Export] public float AttackJumpLeadMax { get; set; } = 32.0f;
+	[Export] public float AttackJumpRange { get; set; } = 100.0f;
+	[Export] public float AttackJumpCooldownSeconds { get; set; } = 15.0f;
+	[Export] public float AttackJumpVelocity { get; set; } = -460.0f;
+	[Export] public float AttackJumpHorizontalSpeed { get; set; } = 310.0f;
+	[Export] public float AttackJumpAirAcceleration { get; set; } = 2000.0f;
+	[Export] public float AttackJumpLeadTime { get; set; } = 0.05f;
+	[Export] public float AttackJumpLeadMax { get; set; } = 16.0f;
 	[Export] public float AttackJumpMinChaseSeconds { get; set; } = 0.5f;
 	[Export] public float DeathJumpVelocity { get; set; } = -240.0f;
-	[Export] public float ContactCooldownSeconds { get; set; } = 0.25f;
-	[Export] public float ContactKnockbackX { get; set; } = 60.0f;
-	[Export] public float ContactKnockbackY { get; set; } = 0.0f;
-	[Export] public float StompVerticalAllowance { get; set; } = 6.0f;
+	[Export] public float ContactCooldownSeconds { get; set; } = 0.025f;
+	[Export] public float ContactKnockbackX { get; set; } = 10.0f;
+	[Export] public float ContactKnockbackY { get; set; } = 5.0f;
+	[Export] public float StompVerticalAllowance { get; set; } = 2.0f;
 	[Export] public float StompMinDownwardVelocity { get; set; } = 10.0f;
+	[Export] public float FireballRange { get; set; } = 160.0f;
+	[Export] public float FireballVerticalTolerance { get; set; } = 28.0f;
+	[Export] public float FireballCooldownSeconds { get; set; } = 7.5f;
+	[Export] public float FireballReactionSeconds { get; set; } = 0.35f;
+	[Export] public float FireballWindupSeconds { get; set; } = 0.5f;
 
 	[Export] public int InitialLives { get; set; } = 3;
 	[Export] public string QuizSetId { get; set; } = "1";
@@ -43,8 +48,7 @@ public partial class Boss : CharacterBody2D
 	private AnimatedSprite2D _anim = null!;
 	private CollisionShape2D _bodyCollision = null!;
 	private Area2D _hitbox = null!;
-	private RayCast2D _wallDetector = null!;
-	private RayCast2D _groundDetector = null!;
+	private Node2D _fireballStartPosition = null!;
 
 	private Control _quizContainer;
 	private QuizUI _quizUI;
@@ -53,7 +57,6 @@ public partial class Boss : CharacterBody2D
 	private BossState _status;
 	private int _direction = 1;
 	private int _lives;
-	private bool _isProcessingHit;
 	private bool _quizActive;
 	private bool _isChasing;
 	private float _reactionTimer;
@@ -66,14 +69,22 @@ public partial class Boss : CharacterBody2D
 	private bool _attackLeftFloor;
 	private float _chaseTime;
 	private float _attackDesiredVx;
+	private float _fireballCooldownRemaining;
+	private float _fireballReactionRemaining;
+	private Node2D _fireballTargetPlayer;
+	private bool _fireballPlaying;
+	private float _fireballWindupRemaining;
+	private Player _attackTargetPlayer;
+	private bool _attackExceptionApplied;
 
 	public override void _Ready()
 	{
 		_anim = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
 		_bodyCollision = GetNode<CollisionShape2D>("CollisionShape2D");
 		_hitbox = GetNode<Area2D>("Hitbox");
-		_wallDetector = GetNode<RayCast2D>("WallDetector");
-		_groundDetector = GetNode<RayCast2D>("GroundDetector");
+		_fireballStartPosition =
+			GetNodeOrNull<Node2D>("FireBallStartPosition") ??
+			GetNodeOrNull<Node2D>("BoneStartPosition");
 
 		_lives = Mathf.Max(1, InitialLives);
 		EnsureQuestionSlots();
@@ -122,6 +133,7 @@ public partial class Boss : CharacterBody2D
 
 		if (_status == BossState.Stunned)
 		{
+			RestoreAttackCollisionException();
 			Velocity = new Vector2(0.0f, Velocity.Y);
 			MoveAndSlide();
 			return;
@@ -132,11 +144,34 @@ public partial class Boss : CharacterBody2D
 			_attackCooldownRemaining = Mathf.Max(0.0f, _attackCooldownRemaining - (float)delta);
 		}
 
+		if (_fireballCooldownRemaining > 0.0f)
+		{
+			_fireballCooldownRemaining = Mathf.Max(0.0f, _fireballCooldownRemaining - (float)delta);
+		}
+
+		if (_fireballReactionRemaining > 0.0f)
+		{
+			_fireballReactionRemaining = Mathf.Max(0.0f, _fireballReactionRemaining - (float)delta);
+		}
+
 		if (_contactCooldown > 0.0f)
 		{
 			_contactCooldown = Mathf.Max(0.0f, _contactCooldown - (float)delta);
 			Velocity = new Vector2(_contactVelocity.X, Velocity.Y);
 			MoveAndSlide();
+			return;
+		}
+
+		if (_fireballWindupRemaining > 0.0f)
+		{
+			_fireballWindupRemaining = Mathf.Max(0.0f, _fireballWindupRemaining - (float)delta);
+			Velocity = new Vector2(0.0f, Velocity.Y);
+			MoveAndSlide();
+
+			if (_fireballWindupRemaining <= 0.0f)
+			{
+				ThrowFireball();
+			}
 			return;
 		}
 
@@ -163,6 +198,7 @@ public partial class Boss : CharacterBody2D
 			{
 				GoToChaseState();
 				ChasePlayer(player);
+				TryStartFireball(player);
 			}
 		}
 		else
@@ -213,6 +249,9 @@ public partial class Boss : CharacterBody2D
 		if (horizontalDistance <= StopDistance)
 		{
 			Velocity = new Vector2(0.0f, Velocity.Y);
+			if (IsOnFloor() && _anim.Animation != "idle")
+				_anim.Play("idle");
+			return;
 		}
 		else
 		{
@@ -295,12 +334,97 @@ public partial class Boss : CharacterBody2D
 		return horizontalDistance <= AttackJumpRange;
 	}
 
+	private void TryStartFireball(Node2D player)
+	{
+		if (!IsOnFloor() || _status == BossState.AttackJump)
+			return;
+
+		if (_fireballCooldownRemaining > 0.0f)
+			return;
+
+		if (!ShouldThrowFireball(player))
+		{
+			_fireballTargetPlayer = null;
+			_fireballReactionRemaining = 0.0f;
+			return;
+		}
+
+		if (_fireballTargetPlayer == null)
+		{
+			_fireballTargetPlayer = player;
+			_fireballReactionRemaining = FireballReactionSeconds;
+			return;
+		}
+
+		if (_fireballReactionRemaining <= 0.0f && ShouldThrowFireball(_fireballTargetPlayer))
+		{
+			StartFireballWindup();
+		}
+	}
+
+	private bool ShouldThrowFireball(Node2D player)
+	{
+		if (player == null)
+			return false;
+
+		float horizontalDistance = Mathf.Abs(player.GlobalPosition.X - GlobalPosition.X);
+		float verticalDistance = Mathf.Abs(player.GlobalPosition.Y - GlobalPosition.Y);
+		if (horizontalDistance > FireballRange || verticalDistance > FireballVerticalTolerance)
+			return false;
+
+		int targetDirection = player.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
+		if (targetDirection != _direction)
+			FlipDirection();
+
+		return true;
+	}
+
+	private void StartFireballWindup()
+	{
+		if (_fireballWindupRemaining > 0.0f)
+			return;
+
+		_fireballWindupRemaining = FireballWindupSeconds;
+		_fireballPlaying = true;
+		_anim.Play("fire");
+	}
+
+	private void ThrowFireball()
+	{
+		FireBall newBall = FireBallScene.Instantiate<FireBall>();
+		GetParent().AddChild(newBall);
+		newBall.GlobalPosition = _fireballStartPosition != null
+			? _fireballStartPosition.GlobalPosition
+			: GlobalPosition;
+		newBall.SetDirection(_direction);
+		_fireballCooldownRemaining = FireballCooldownSeconds;
+		_fireballTargetPlayer = null;
+		_fireballReactionRemaining = 0.0f;
+	}
+
+	private void _on_animated_sprite_2d_animation_finished()
+	{
+		if (_anim.Animation == "fire")
+		{
+			_fireballPlaying = false;
+			if (_status == BossState.Chase)
+			{
+				if (IsOnFloor() && Mathf.Abs(Velocity.X) <= 0.01f)
+					_anim.Play("idle");
+				else if (IsOnFloor())
+					_anim.Play("walk");
+			}
+		}
+	}
+
 	private void StartAttackJump(Node2D player)
 	{
 		_status = BossState.AttackJump;
 		_attackTargetX = GetAttackTargetX(player);
 		_attackCooldownRemaining = AttackJumpCooldownSeconds;
 		_attackLeftFloor = false;
+		_attackTargetPlayer = player as Player;
+		_attackExceptionApplied = false;
 
 		_attackDesiredVx = ComputeAttackDesiredVx();
 
@@ -329,6 +453,8 @@ public partial class Boss : CharacterBody2D
 	{
 		if (!IsOnFloor())
 		{
+			ApplyAttackCollisionException();
+
 			Velocity = new Vector2(
 				Mathf.MoveToward(Velocity.X, _attackDesiredVx, AttackJumpAirAcceleration * delta),
 				Velocity.Y
@@ -341,6 +467,7 @@ public partial class Boss : CharacterBody2D
 		}
 		else if (_attackLeftFloor)
 		{
+			RestoreAttackCollisionException();
 			_status = BossState.Chase;
 			_attackLeftFloor = false;
 		}
@@ -358,6 +485,28 @@ public partial class Boss : CharacterBody2D
 			desiredVx = AttackJumpHorizontalSpeed * (_attackTargetX >= GlobalPosition.X ? 1.0f : -1.0f);
 
 		return Mathf.Clamp(desiredVx, -AttackJumpHorizontalSpeed, AttackJumpHorizontalSpeed);
+	}
+
+	private void ApplyAttackCollisionException()
+	{
+		if (_attackExceptionApplied)
+			return;
+
+		if (_attackTargetPlayer != null)
+		{
+			AddCollisionExceptionWith(_attackTargetPlayer);
+			_attackExceptionApplied = true;
+		}
+	}
+
+	private void RestoreAttackCollisionException()
+	{
+		if (_attackExceptionApplied && _attackTargetPlayer != null)
+		{
+			RemoveCollisionExceptionWith(_attackTargetPlayer);
+			_attackExceptionApplied = false;
+			_attackTargetPlayer = null;
+		}
 	}
 
 	private Player GetPlayer()
@@ -507,16 +656,6 @@ public partial class Boss : CharacterBody2D
 		_hitbox.SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
 		if (_bodyCollision != null)
 			_bodyCollision.SetDeferred("disabled", true);
-	}
-
-	private void TriggerPlayerDeath(Player player)
-	{
-		if (_isProcessingHit)
-			return;
-
-		_isProcessingHit = true;
-		player?.EmitSignal(Player.SignalName.DeathTriggered);
-		_isProcessingHit = false;
 	}
 
 	private void ApplyContactSeparation(Player player)
