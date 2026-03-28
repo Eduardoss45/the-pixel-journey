@@ -15,13 +15,22 @@ public partial class Boss : CharacterBody2D
 		Dead
 	}
 
+	private enum ComboState
+	{
+		None,
+		SpinningPunch,
+		Punch,
+		FireWindup,
+		JumpAttack
+	}
+
 	[Export] public float ChaseRange { get; set; } = 240.0f;
 	[Export] public float LoseRange { get; set; } = 300.0f;
 	[Export] public float Speed { get; set; } = 85.0f;
-	[Export] public float StopDistance { get; set; } = 100.0f;
+	[Export] public float StopDistance { get; set; } = 25.0f;
 	[Export] public float ReactionDelaySeconds { get; set; } = 0.35f;
 	[Export] public float AttackJumpRange { get; set; } = 100.0f;
-	[Export] public float AttackJumpCooldownSeconds { get; set; } = 15.0f;
+	[Export] public float AttackJumpCooldownSeconds { get; set; } = 7.0f;
 	[Export] public float AttackJumpVelocity { get; set; } = -460.0f;
 	[Export] public float AttackJumpHorizontalSpeed { get; set; } = 310.0f;
 	[Export] public float AttackJumpAirAcceleration { get; set; } = 2000.0f;
@@ -34,11 +43,15 @@ public partial class Boss : CharacterBody2D
 	[Export] public float ContactKnockbackY { get; set; } = 5.0f;
 	[Export] public float StompVerticalAllowance { get; set; } = 2.0f;
 	[Export] public float StompMinDownwardVelocity { get; set; } = 10.0f;
-	[Export] public float FireballRange { get; set; } = 160.0f;
+	[Export] public float FireballRange { get; set; } = 480.0f;
 	[Export] public float FireballVerticalTolerance { get; set; } = 28.0f;
-	[Export] public float FireballCooldownSeconds { get; set; } = 7.5f;
+	[Export] public float FireballCooldownSeconds { get; set; } = 3.5f;
 	[Export] public float FireballReactionSeconds { get; set; } = 0.35f;
-	[Export] public float FireballWindupSeconds { get; set; } = 0.5f;
+	[Export] public float FireballWindupSeconds { get; set; } = 0.25f;
+	[Export] public float ComboRange { get; set; } = 72.0f;
+	[Export] public float ComboDashSpeed { get; set; } = 90.0f;
+	[Export] public float ComboCooldownSeconds { get; set; } = 0.75f;
+	[Export] public float PostQuizImmunitySeconds { get; set; } = 1.5f;
 
 	[Export] public int InitialLives { get; set; } = 3;
 	[Export] public string QuizSetId { get; set; } = "1";
@@ -74,6 +87,11 @@ public partial class Boss : CharacterBody2D
 	private Node2D _fireballTargetPlayer;
 	private bool _fireballPlaying;
 	private float _fireballWindupRemaining;
+	private ComboState _comboState;
+	private float _comboCooldownRemaining;
+	private Player _comboTargetPlayer;
+	private int _comboDirection = 1;
+	private float _postQuizImmunityRemaining;
 	private Player _attackTargetPlayer;
 	private bool _attackExceptionApplied;
 
@@ -131,6 +149,26 @@ public partial class Boss : CharacterBody2D
 			return;
 		}
 
+		if (_attackCooldownRemaining > 0.0f)
+		{
+			_attackCooldownRemaining = Mathf.Max(0.0f, _attackCooldownRemaining - (float)delta);
+		}
+
+		if (_postQuizImmunityRemaining > 0.0f)
+		{
+			_postQuizImmunityRemaining = Mathf.Max(0.0f, _postQuizImmunityRemaining - (float)delta);
+			GoToStunnedState();
+			Velocity = new Vector2(0.0f, Velocity.Y);
+			MoveAndSlide();
+
+			if (_postQuizImmunityRemaining <= 0.0f)
+			{
+				ResetAbilityCooldowns();
+				GoToIdleState();
+			}
+			return;
+		}
+
 		if (_status == BossState.Stunned)
 		{
 			RestoreAttackCollisionException();
@@ -139,9 +177,9 @@ public partial class Boss : CharacterBody2D
 			return;
 		}
 
-		if (_attackCooldownRemaining > 0.0f)
+		if (_comboCooldownRemaining > 0.0f)
 		{
-			_attackCooldownRemaining = Mathf.Max(0.0f, _attackCooldownRemaining - (float)delta);
+			_comboCooldownRemaining = Mathf.Max(0.0f, _comboCooldownRemaining - (float)delta);
 		}
 
 		if (_fireballCooldownRemaining > 0.0f)
@@ -171,6 +209,11 @@ public partial class Boss : CharacterBody2D
 			if (_fireballWindupRemaining <= 0.0f)
 			{
 				ThrowFireball();
+				if (_comboState == ComboState.FireWindup && _comboTargetPlayer != null)
+				{
+					_comboState = ComboState.JumpAttack;
+					StartAttackJump(_comboTargetPlayer);
+				}
 			}
 			return;
 		}
@@ -187,18 +230,21 @@ public partial class Boss : CharacterBody2D
 		{
 			ProcessAttackJump((float)delta);
 		}
+		else if (_comboState != ComboState.None)
+		{
+			ProcessCombo();
+		}
 		else if (_isChasing && player != null)
 		{
 			_chaseTime += (float)delta;
-			if (CanStartAttackJump(player))
+			if (TryStartCombo(player))
 			{
-				StartAttackJump(player);
+				ProcessCombo();
 			}
 			else
 			{
 				GoToChaseState();
 				ChasePlayer(player);
-				TryStartFireball(player);
 			}
 		}
 		else
@@ -321,6 +367,9 @@ public partial class Boss : CharacterBody2D
 
 	private bool CanStartAttackJump(Node2D player)
 	{
+		if (_comboState != ComboState.None)
+			return false;
+
 		if (player == null || !IsOnFloor())
 			return false;
 
@@ -336,6 +385,9 @@ public partial class Boss : CharacterBody2D
 
 	private void TryStartFireball(Node2D player)
 	{
+		if (_comboState != ComboState.None)
+			return;
+
 		if (!IsOnFloor() || _status == BossState.AttackJump)
 			return;
 
@@ -407,6 +459,8 @@ public partial class Boss : CharacterBody2D
 		if (_anim.Animation == "fire")
 		{
 			_fireballPlaying = false;
+			if (_comboState == ComboState.FireWindup || _comboState == ComboState.JumpAttack)
+				return;
 			if (_status == BossState.Chase)
 			{
 				if (IsOnFloor() && Mathf.Abs(Velocity.X) <= 0.01f)
@@ -414,6 +468,29 @@ public partial class Boss : CharacterBody2D
 				else if (IsOnFloor())
 					_anim.Play("walk");
 			}
+			return;
+		}
+
+		if (_anim.Animation == "punch" && _comboState == ComboState.Punch)
+		{
+			if (_comboTargetPlayer != null)
+				_comboDirection = _comboTargetPlayer.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
+			if (_comboDirection != _direction)
+				FlipDirection();
+
+			_comboState = ComboState.SpinningPunch;
+			_anim.Play("spinning_punch");
+			return;
+		}
+
+		if (_anim.Animation == "spinning_punch" && _comboState == ComboState.SpinningPunch)
+		{
+			_comboState = ComboState.None;
+			_comboCooldownRemaining = ComboCooldownSeconds;
+			_comboTargetPlayer = null;
+			_fireballCooldownRemaining = FireballCooldownSeconds;
+			_attackCooldownRemaining = AttackJumpCooldownSeconds;
+			return;
 		}
 	}
 
@@ -470,6 +547,55 @@ public partial class Boss : CharacterBody2D
 			RestoreAttackCollisionException();
 			_status = BossState.Chase;
 			_attackLeftFloor = false;
+			if (_comboState == ComboState.JumpAttack)
+			{
+				_comboState = ComboState.Punch;
+				_anim.Play("punch");
+			}
+		}
+	}
+
+	private bool TryStartCombo(Player player)
+	{
+		if (_comboState != ComboState.None)
+			return false;
+
+		if (_comboCooldownRemaining > 0.0f)
+			return false;
+
+		if (!IsOnFloor() || _status == BossState.AttackJump)
+			return false;
+
+		float horizontalDistance = Mathf.Abs(player.GlobalPosition.X - GlobalPosition.X);
+		if (horizontalDistance > ComboRange)
+			return false;
+
+		_comboState = ComboState.FireWindup;
+		_comboTargetPlayer = player;
+		_comboDirection = player.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
+		if (_comboDirection != _direction)
+			FlipDirection();
+
+		_fireballTargetPlayer = null;
+		_fireballReactionRemaining = 0.0f;
+		_fireballCooldownRemaining = 0.0f;
+		_attackCooldownRemaining = 0.0f;
+		StartFireballWindup();
+		return true;
+	}
+
+	private void ProcessCombo()
+	{
+		if (_comboState == ComboState.SpinningPunch || _comboState == ComboState.Punch)
+		{
+			if (_comboDirection != _direction)
+				FlipDirection();
+
+			Velocity = new Vector2(ComboDashSpeed * _comboDirection, Velocity.Y);
+		}
+		else
+		{
+			Velocity = new Vector2(0.0f, Velocity.Y);
 		}
 	}
 
@@ -522,6 +648,11 @@ public partial class Boss : CharacterBody2D
 
 	private void _on_hitbox_body_entered(Node2D body)
 	{
+		if (_postQuizImmunityRemaining > 0.0f)
+		{
+			return;
+		}
+
 		if (_status == BossState.Dead || _quizActive || !body.IsInGroup("Player"))
 		{
 			return;
@@ -634,6 +765,28 @@ public partial class Boss : CharacterBody2D
 			tree.Paused = false;
 
 		_quizActive = false;
+		_postQuizImmunityRemaining = PostQuizImmunitySeconds;
+		GoToStunnedState();
+	}
+
+	private void ResetAbilityCooldowns()
+	{
+		_attackCooldownRemaining = 0.0f;
+		_fireballCooldownRemaining = 0.0f;
+		_fireballReactionRemaining = 0.0f;
+		_fireballWindupRemaining = 0.0f;
+		_fireballTargetPlayer = null;
+		_fireballPlaying = false;
+
+		_comboState = ComboState.None;
+		_comboCooldownRemaining = 0.0f;
+		_comboTargetPlayer = null;
+
+		_chaseTime = 0.0f;
+		_reactionTimer = 0.0f;
+		_isChasing = false;
+		_attackLeftFloor = false;
+		_attackDesiredVx = 0.0f;
 	}
 
 	private void ResumeAfterQuiz()
