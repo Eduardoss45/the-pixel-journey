@@ -26,12 +26,12 @@ public partial class Boss : CharacterBody2D
 
 	[Export] public float ChaseRange { get; set; } = 240.0f;
 	[Export] public float LoseRange { get; set; } = 300.0f;
-	[Export] public float Speed { get; set; } = 85.0f;
-	[Export] public float StopDistance { get; set; } = 25.0f;
+	[Export] public float Speed { get; set; } = 105.0f;
+	[Export] public float StopDistance { get; set; } = 15.0f;
 	[Export] public float ReactionDelaySeconds { get; set; } = 0.35f;
-	[Export] public float AttackJumpRange { get; set; } = 100.0f;
-	[Export] public float AttackJumpCooldownSeconds { get; set; } = 7.0f;
-	[Export] public float AttackJumpVelocity { get; set; } = -460.0f;
+	[Export] public float AttackJumpRange { get; set; } = 150.0f;
+	[Export] public float AttackJumpCooldownSeconds { get; set; } = 5.0f;
+	[Export] public float AttackJumpVelocity { get; set; } = -360.0f;
 	[Export] public float AttackJumpHorizontalSpeed { get; set; } = 310.0f;
 	[Export] public float AttackJumpAirAcceleration { get; set; } = 2000.0f;
 	[Export] public float AttackJumpLeadTime { get; set; } = 0.05f;
@@ -49,7 +49,7 @@ public partial class Boss : CharacterBody2D
 	[Export] public float FireballReactionSeconds { get; set; } = 0.35f;
 	[Export] public float FireballWindupSeconds { get; set; } = 0.25f;
 	[Export] public float ComboRange { get; set; } = 72.0f;
-	[Export] public float ComboDashSpeed { get; set; } = 90.0f;
+	[Export] public float ComboDashSpeed { get; set; } = 260.0f;
 	[Export] public float ComboCooldownSeconds { get; set; } = 0.75f;
 	[Export] public float PostQuizImmunitySeconds { get; set; } = 1.5f;
 
@@ -473,11 +473,6 @@ public partial class Boss : CharacterBody2D
 
 		if (_anim.Animation == "punch" && _comboState == ComboState.Punch)
 		{
-			if (_comboTargetPlayer != null)
-				_comboDirection = _comboTargetPlayer.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
-			if (_comboDirection != _direction)
-				FlipDirection();
-
 			_comboState = ComboState.SpinningPunch;
 			_anim.Play("spinning_punch");
 			return;
@@ -550,6 +545,10 @@ public partial class Boss : CharacterBody2D
 			if (_comboState == ComboState.JumpAttack)
 			{
 				_comboState = ComboState.Punch;
+				if (_comboTargetPlayer != null)
+					_comboDirection = _comboTargetPlayer.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
+				if (_comboDirection != _direction)
+					FlipDirection();
 				_anim.Play("punch");
 			}
 		}
@@ -678,7 +677,7 @@ public partial class Boss : CharacterBody2D
 
 	private void HandleStomp(Player player)
 	{
-		if (_status == BossState.Dead || _quizActive)
+		if (_status == BossState.Dead || _quizActive || _status == BossState.Stunned || _postQuizImmunityRemaining > 0.0f)
 			return;
 
 		_playerThatHit = player;
@@ -686,6 +685,23 @@ public partial class Boss : CharacterBody2D
 
 		GoToStunnedState();
 		OpenQuizForStomp(GetStompIndex());
+	}
+
+	public void TakeDamage()
+	{
+		if (_status == BossState.Dead || _quizActive || _status == BossState.Stunned || _postQuizImmunityRemaining > 0.0f)
+			return;
+
+		Player player = GetPlayer();
+		if (player == null)
+			return;
+
+		HandleStomp(player);
+	}
+
+	public void take_damage()
+	{
+		TakeDamage();
 	}
 
 	private int GetStompIndex()
