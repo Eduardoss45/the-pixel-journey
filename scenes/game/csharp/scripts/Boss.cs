@@ -443,15 +443,26 @@ public partial class Boss : CharacterBody2D
 
 	private void ThrowFireball()
 	{
+		SpawnFireball(0.0f);
+		SpawnFireball(15.0f);
+		SpawnFireball(30.0f);
+		_fireballCooldownRemaining = FireballCooldownSeconds;
+		_fireballTargetPlayer = null;
+		_fireballReactionRemaining = 0.0f;
+	}
+
+	private void SpawnFireball(float angleDegrees)
+	{
 		FireBall newBall = FireBallScene.Instantiate<FireBall>();
 		GetParent().AddChild(newBall);
 		newBall.GlobalPosition = _fireballStartPosition != null
 			? _fireballStartPosition.GlobalPosition
 			: GlobalPosition;
-		newBall.SetDirection(_direction);
-		_fireballCooldownRemaining = FireballCooldownSeconds;
-		_fireballTargetPlayer = null;
-		_fireballReactionRemaining = 0.0f;
+
+		if (Mathf.IsZeroApprox(angleDegrees))
+			newBall.SetDirection(_direction);
+		else
+			newBall.SetAngleDegrees(_direction, angleDegrees);
 	}
 
 	private void _on_animated_sprite_2d_animation_finished()

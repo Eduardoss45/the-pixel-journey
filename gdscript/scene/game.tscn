@@ -1,8 +1,8 @@
 [gd_scene load_steps=4 format=4 uid="uid://bwbybr7nyjlan"]
 
-[ext_resource type="PackedScene" uid="uid://b4uyanguafauh" path="res://entities/player.tscn" id="1_5kiuu"]
-[ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://tiles/terrain.tres" id="2_33cqm"]
-[ext_resource type="TileSet" uid="uid://ckf2afy4m5an6" path="res://tiles/decoration.tres" id="3_xwcet"]
+[ext_resource type="PackedScene" uid="uid://b4uyanguafauh" path="res://gdscript/entities/player.tscn" id="1_5kiuu"]
+[ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://gdscript/tiles/terrain.tres" id="2_33cqm"]
+[ext_resource type="TileSet" uid="uid://ckf2afy4m5an6" path="res://gdscript/tiles/decoration.tres" id="3_xwcet"]
 
 [node name="Game" type="Node2D"]
 

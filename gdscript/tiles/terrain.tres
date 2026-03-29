@@ -1,4 +1,4 @@
-[gd_resource type="TileSet" load_steps=13 format=3 uid="uid://ci6yocecub5y3"]
+[gd_resource type="TileSet" load_steps=19 format=3 uid="uid://ci6yocecub5y3"]
 
 [ext_resource type="Texture2D" uid="uid://crk0d4b1jyus4" path="res://gdscript/sprites/Seasonal Tilesets/1 - Grassland/Terrain (16 x 16).png" id="1_udkip"]
 [ext_resource type="Texture2D" uid="uid://b4rwuf8uohjsb" path="res://gdscript/sprites/Seasonal Tilesets/2 - Autumn Forest/Terrain (16 x 16).png" id="2_8t5ty"]
@@ -11,6 +11,24 @@ tile_data = PackedInt32Array(0, 589825, 3, 1, 655361, 3, 2, 786433, 3, 3, 851969
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_pi5te"]
 tile_data = PackedInt32Array(0, 589826, 3, 1, 655362, 3, 2, 851970, 3)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_06kei"]
+tile_data = PackedInt32Array(0, 196610, 5, 1, 327682, 5)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_kaeqc"]
+tile_data = PackedInt32Array(0, 196610, 6, 1, 327682, 6)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_uckfe"]
+tile_data = PackedInt32Array(0, 3, 0, 1, 262147, 0)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_jqqab"]
+tile_data = PackedInt32Array(0, 196611, 0, 65536, 262146, 6)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_iua1d"]
+tile_data = PackedInt32Array(0, 262147, 0, 65536, 327682, 6)
+
+[sub_resource type="TileMapPattern" id="TileMapPattern_tvb2d"]
+tile_data = PackedInt32Array(0, 3, 0, 65536, 196610, 6)
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_33cqm"]
 resource_name = "Grassland"
@@ -306,3 +324,9 @@ sources/3 = SubResource("TileSetAtlasSource_4mtcj")
 sources/4 = SubResource("TileSetAtlasSource_06kei")
 pattern_0 = SubResource("TileMapPattern_x37tn")
 pattern_1 = SubResource("TileMapPattern_pi5te")
+pattern_2 = SubResource("TileMapPattern_06kei")
+pattern_3 = SubResource("TileMapPattern_kaeqc")
+pattern_4 = SubResource("TileMapPattern_uckfe")
+pattern_5 = SubResource("TileMapPattern_jqqab")
+pattern_6 = SubResource("TileMapPattern_iua1d")
+pattern_7 = SubResource("TileMapPattern_tvb2d")

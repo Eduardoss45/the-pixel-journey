@@ -1,9 +1,9 @@
 [gd_resource type="TileSet" load_steps=11 format=3 uid="uid://ckf2afy4m5an6"]
 
-[ext_resource type="Texture2D" uid="uid://ckrhdxtqb3ejs" path="res://sprites/Seasonal Tilesets/1 - Grassland/Grassland_entities (16 x 16).png" id="1_4pksi"]
-[ext_resource type="Texture2D" uid="uid://biivjt7bm3tra" path="res://sprites/Seasonal Tilesets/5 - Misc. universal tiles/Flowers (16 x 16).png" id="2_k56fq"]
-[ext_resource type="Texture2D" uid="uid://elssfruw2fos" path="res://sprites/Seasonal Tilesets/5 - Misc. universal tiles/House (112 x 96).png" id="3_b4fdq"]
-[ext_resource type="Texture2D" uid="uid://d15y2nr1hdoxq" path="res://sprites/Seasonal Tilesets/3 - Tropics/Tropics_entities (16 x 16).png" id="4_k56fq"]
+[ext_resource type="Texture2D" uid="uid://ckrhdxtqb3ejs" path="res://gdscript/sprites/Seasonal Tilesets/1 - Grassland/Grassland_entities (16 x 16).png" id="1_4pksi"]
+[ext_resource type="Texture2D" uid="uid://biivjt7bm3tra" path="res://gdscript/sprites/Seasonal Tilesets/5 - Misc. universal tiles/Flowers (16 x 16).png" id="2_k56fq"]
+[ext_resource type="Texture2D" uid="uid://elssfruw2fos" path="res://gdscript/sprites/Seasonal Tilesets/5 - Misc. universal tiles/House (112 x 96).png" id="3_b4fdq"]
+[ext_resource type="Texture2D" uid="uid://d15y2nr1hdoxq" path="res://gdscript/sprites/Seasonal Tilesets/3 - Tropics/Tropics_entities (16 x 16).png" id="4_k56fq"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_p1ry8"]
 tile_data = PackedInt32Array(65536, 65536, 5, 1, 65536, 1, 65537, 65536, 5, 3, 65536, 1)
@@ -73,13 +73,13 @@ texture = ExtResource("4_k56fq")
 12:5/animation_frame_0/duration = 0.3
 12:5/animation_frame_1/duration = 0.3
 12:5/0 = 0
-12:5/0/modulate = Color(1, 1, 1, 0.5254902)
+12:5/0/modulate = Color(1, 1, 1, 0.52549)
 12:5/0/z_index = 2
 12:6/animation_separation = Vector2i(1, 0)
 12:6/animation_frame_0/duration = 1.0
 12:6/animation_frame_1/duration = 1.0
 12:6/0 = 0
-12:6/0/modulate = Color(1, 1, 1, 0.5254902)
+12:6/0/modulate = Color(1, 1, 1, 0.52549)
 12:6/0/z_index = 2
 12:7/0 = 0
 14:7/0 = 0

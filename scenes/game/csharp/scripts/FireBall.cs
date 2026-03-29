@@ -9,26 +9,39 @@ public partial class FireBall : Area2D
 
 	private const float Speed = 180.0f;
 	private int _direction = 1;
+	private Vector2 _velocity = Vector2.Zero;
 
 	public override void _Ready()
 	{
 		_anim = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+		_velocity = new Vector2(Speed * _direction, 0.0f);
 	}
 
 	public override void _Process(double delta)
 	{
-		Position += new Vector2(Speed * (float)delta * _direction, 0.0f);
+		Position += _velocity * (float)delta;
 	}
 
 	public void SetDirection(int skeletonDirection)
 	{
 		_direction = skeletonDirection;
+		_velocity = new Vector2(Speed * _direction, 0.0f);
 		_anim.FlipH = _direction < 0;
 	}
 
 	public void set_direction(int skeletonDirection)
 	{
 		SetDirection(skeletonDirection);
+	}
+
+	public void SetAngleDegrees(int direction, float angleDegrees)
+	{
+		_direction = direction;
+		float radians = Mathf.DegToRad(angleDegrees);
+		float x = Mathf.Cos(radians) * _direction;
+		float y = -Mathf.Sin(radians);
+		_velocity = new Vector2(x, y) * Speed;
+		_anim.FlipH = _direction < 0;
 	}
 
 	private void _on_self_destruct_timer_timeout()
