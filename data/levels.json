@@ -2,12 +2,12 @@
     "levels": [
         {
             "levelId": "functions_move_01",
-            "instruction": "Crie uma função chamada ativarPlataforma() que retorne 1 (padrão de movimento de subir e descer).",
+            "instruction": "Crie uma função chamada ativarPlataforma() que retorne 3 (padrão de movimento de subir).",
             "type": "function",
             "requiredFunction": "ativarPlataforma",
-            "expectedReturn": 1,
+            "expectedReturn": 3,
             "validPatterns": [
-                1
+                3
             ],
             "effect": "set_pattern"
         },

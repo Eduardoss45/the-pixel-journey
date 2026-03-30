@@ -5,6 +5,7 @@ public partial class CodeBlock : AnimatableBody2D
 {
 	[Export] public string[] TargetMechanismIds;
 	[Export] public string LevelId { get; set; } = "functions_move_01";
+	[Export(PropertyHint.Enum, "activate,stop,set_pattern")] public string DefaultEffectId { get; set; } = "activate";
 	[Export] public float BounceHeight = 10f;
 	[Export] public float BounceDuration = 0.6f;
 

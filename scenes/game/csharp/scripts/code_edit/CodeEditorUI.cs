@@ -60,7 +60,8 @@ public partial class CodeEditorUI : Control
             currentLevelData = new LevelData
             {
                 Instruction = "Lição não configurada. Escreva qualquer código para testar.",
-                LevelId = levelId
+                LevelId = levelId,
+                Effect = codeBlockParent?.DefaultEffectId ?? "activate"
             };
         }
 
@@ -150,11 +151,15 @@ public partial class CodeEditorUI : Control
         if (codeBlockParent.TargetMechanismIds == null)
             return;
 
+        string effectId = string.IsNullOrWhiteSpace(codeBlockParent?.DefaultEffectId)
+            ? (string.IsNullOrWhiteSpace(currentLevelData?.Effect) ? "activate" : currentLevelData.Effect)
+            : codeBlockParent.DefaultEffectId;
+
         foreach (string targetId in codeBlockParent.TargetMechanismIds)
         {
             ObjectManager.Instance?.ApplyEffect(
                 targetId,
-                currentLevelData.Effect,
+                effectId,
                 value
             );
         }

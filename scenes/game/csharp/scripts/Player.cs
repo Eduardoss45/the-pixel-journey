@@ -15,6 +15,12 @@ public partial class Player : CharacterBody2D
 		Hurt
 	}
 
+	public enum DeathCause
+	{
+		Damage,
+		Void
+	}
+
 	private AnimatedSprite2D _anim = null!;
 	private CollisionShape2D _collisionShape = null!;
 	private CollisionShape2D _hitboxCollision = null!;
@@ -28,11 +34,18 @@ public partial class Player : CharacterBody2D
 	private float _direction;
 	private PlayerState _status;
 	private float _forceAirRemaining;
+	private float _invulnerableRemaining;
+	private float _blinkTimer;
 
 	[Signal]
 	public delegate void DeathTriggeredEventHandler();
 
 	[Export] public float DeathYThreshold { get; set; } = 300.0f;
+	[Export] public float RespawnInvulnerableSeconds { get; set; } = 3.0f;
+	[Export] public float RespawnBlinkInterval { get; set; } = 0.12f;
+
+	public DeathCause LastDeathCause { get; private set; } = DeathCause.Damage;
+	public bool IsInvulnerable => _invulnerableRemaining > 0.0f;
 
 	[Export] public float MaxSpeed { get; set; } = 150.0f;
 	[Export] public float Acceleration { get; set; } = 400.0f;
@@ -58,6 +71,8 @@ public partial class Player : CharacterBody2D
 		_reloadTimer = GetNode<Timer>("ReloadTimer");
 
 		GoToIdleState();
+
+		GameSession.Instance?.SetRespawnPosition(GlobalPosition);
 	}
 
 	public override void _PhysicsProcess(double delta)
@@ -66,6 +81,8 @@ public partial class Player : CharacterBody2D
 		{
 			_forceAirRemaining = Mathf.Max(0.0f, _forceAirRemaining - (float)delta);
 		}
+
+		UpdateInvulnerability((float)delta);
 
 		if (!_canMove)
 		{
@@ -109,9 +126,7 @@ public partial class Player : CharacterBody2D
 
 		if (!_deathTriggered && GlobalPosition.Y > DeathYThreshold)
 		{
-			_deathTriggered = true;
-			_canMove = false;
-			EmitSignal(SignalName.DeathTriggered);
+			TriggerDeath(DeathCause.Void);
 		}
 
 		if (_deathTriggered)
