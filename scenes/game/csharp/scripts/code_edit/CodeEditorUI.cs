@@ -115,6 +115,7 @@ public partial class CodeEditorUI : Control
 
             TriggerGameSuccess(firstValue);
 
+            codeBlockParent?.MarkCompleted();
             codeBlockParent?.CloseCodeEditor();
         }
 

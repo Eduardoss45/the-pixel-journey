@@ -210,16 +210,14 @@ public partial class Player : CharacterBody2D
 		if (_status == PlayerState.Hurt)
 			return;
 
+		if (IsInvulnerable)
+			return;
+
 		_status = PlayerState.Hurt;
 		_anim.Play("hurt");
 		Velocity = new Vector2(0.0f, Velocity.Y);
 
-		if (!_deathTriggered)
-		{
-			_deathTriggered = true;
-			_canMove = false;
-			EmitSignal(SignalName.DeathTriggered);
-		}
+		TriggerDeath(DeathCause.Damage);
 	}
 
 	private void IdleState(float delta)
@@ -511,7 +509,7 @@ public partial class Player : CharacterBody2D
 	{
 		if (body.IsInGroup("LethalArea"))
 		{
-			GoToHurtState();
+			TryApplyDamage();
 			return;
 		}
 
@@ -540,13 +538,78 @@ public partial class Player : CharacterBody2D
 		}
 		else
 		{
-			GoToHurtState();
+			TryApplyDamage();
 		}
 	}
 
 	private void HitLethalArea()
 	{
+		TryApplyDamage();
+	}
+
+	public bool TryApplyDamage()
+	{
+		if (IsInvulnerable || _deathTriggered)
+			return false;
+
 		GoToHurtState();
+		return true;
+	}
+
+	private void TriggerDeath(DeathCause cause)
+	{
+		if (_deathTriggered)
+			return;
+
+		LastDeathCause = cause;
+		_deathTriggered = true;
+		_canMove = false;
+		EmitSignal(SignalName.DeathTriggered);
+	}
+
+	private void UpdateInvulnerability(float delta)
+	{
+		if (_invulnerableRemaining <= 0.0f)
+			return;
+
+		_invulnerableRemaining = Mathf.Max(0.0f, _invulnerableRemaining - delta);
+		_blinkTimer -= delta;
+
+		if (_blinkTimer <= 0.0f)
+		{
+			_blinkTimer = Mathf.Max(RespawnBlinkInterval, 0.05f);
+			_anim.Visible = !_anim.Visible;
+		}
+
+		if (_invulnerableRemaining <= 0.0f)
+			_anim.Visible = true;
+	}
+
+	private void StartInvulnerability(float seconds)
+	{
+		if (seconds <= 0.0f)
+		{
+			_invulnerableRemaining = 0.0f;
+			_anim.Visible = true;
+			return;
+		}
+
+		_invulnerableRemaining = seconds;
+		_blinkTimer = Mathf.Max(RespawnBlinkInterval, 0.05f);
+		_anim.Visible = true;
+	}
+
+	public void RespawnAt(Vector2 position)
+	{
+		GlobalPosition = position;
+		Velocity = Vector2.Zero;
+		_jumpCount = 0;
+		_forceAirRemaining = 0.0f;
+		_deathTriggered = false;
+		_canMove = true;
+		SetLargeCollider();
+		GoToIdleState();
+		StartInvulnerability(RespawnInvulnerableSeconds);
 	}
 
 	private void _on_reload_timer_timeout()

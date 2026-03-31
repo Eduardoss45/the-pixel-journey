@@ -109,7 +109,21 @@ public partial class Hud : CanvasLayer
 			return;
 		}
 
+		var deathCause = player?.LastDeathCause ?? Player.DeathCause.Damage;
+
 		await PlayDeathVisualSequence();
+
+		if (gameSession.State == GameSession.GameState.PlayerDead &&
+			deathCause == Player.DeathCause.Damage)
+		{
+			gameSession.EnterPlayingState();
+			var respawnPosition = gameSession.GetRespawnPositionOr(player?.GlobalPosition ?? Vector2.Zero);
+			player?.RespawnAt(respawnPosition);
+			await FadeBackIn();
+			deathFlowRunning = false;
+			return;
+		}
+
 		gameSession.ResetGlobalRuntimeState();
 
 		if (gameSession.State == GameSession.GameState.PlayerDead)
@@ -169,6 +183,16 @@ public partial class Hud : CanvasLayer
 		tween.TweenProperty(fadeOverlay, "modulate:a", 1.0f, FadeDurationSeconds);
 		await ToSignal(tween, Tween.SignalName.Finished);
 		await ToSignal(GetTree().CreateTimer(DeathPauseSeconds), SceneTreeTimer.SignalName.Timeout);
+	}
+
+	private async System.Threading.Tasks.Task FadeBackIn()
+	{
+		if (fadeOverlay == null)
+			return;
+
+		var tween = CreateTween();
+		tween.TweenProperty(fadeOverlay, "modulate:a", 0.0f, FadeDurationSeconds);
+		await ToSignal(tween, Tween.SignalName.Finished);
 	}
 
 	private void EnsureFadeOverlay()

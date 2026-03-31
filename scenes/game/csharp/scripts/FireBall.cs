@@ -83,7 +83,7 @@ public partial class FireBall : Area2D
 			player = GetTree().GetFirstNodeInGroup("Player") as Player;
 		}
 
-		player?.EmitSignal(Player.SignalName.DeathTriggered);
+		player?.TryApplyDamage();
 		QueueFree();
 		_isProcessingHit = false;
 	}

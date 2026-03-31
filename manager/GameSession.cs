@@ -11,6 +11,7 @@ public partial class GameSession : Node
 
     [Signal] public delegate void LivesChangedEventHandler(int lives);
     [Signal] public delegate void StateChangedEventHandler(int state);
+    [Signal] public delegate void RuntimeResetEventHandler();
 
     public const int InitialLives = 5;
     public const string GameOverScenePath = "res://scenes/game/csharp/entities/game_over.tscn";
@@ -19,6 +20,8 @@ public partial class GameSession : Node
 
     public int Lives { get; private set; } = InitialLives;
     public GameState State { get; private set; } = GameState.Playing;
+    public Vector2 RespawnPosition { get; private set; } = Vector2.Zero;
+    public bool HasRespawnPosition { get; private set; }
 
     public override void _Ready()
     {
@@ -30,6 +33,7 @@ public partial class GameSession : Node
         Lives = InitialLives;
         SetState(GameState.Playing);
         EmitSignal(SignalName.LivesChanged, Lives);
+        ResetRespawnPosition();
     }
 
     public void EnterPlayingState()
@@ -62,6 +66,24 @@ public partial class GameSession : Node
 
         ObjectManager.Instance?.ResetRuntimeState();
         QuizManager.Instance?.ResetRuntimeState();
+        EmitSignal(SignalName.RuntimeReset);
+    }
+
+    public void SetRespawnPosition(Vector2 position)
+    {
+        RespawnPosition = position;
+        HasRespawnPosition = true;
+    }
+
+    public Vector2 GetRespawnPositionOr(Vector2 fallback)
+    {
+        return HasRespawnPosition ? RespawnPosition : fallback;
+    }
+
+    public void ResetRespawnPosition()
+    {
+        HasRespawnPosition = false;
+        RespawnPosition = Vector2.Zero;
     }
 
     private void SetState(GameState newState)

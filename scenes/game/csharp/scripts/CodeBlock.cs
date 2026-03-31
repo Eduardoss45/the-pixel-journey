@@ -11,9 +11,11 @@ public partial class CodeBlock : AnimatableBody2D
 
 	private Vector2 _startPosition;
 	private bool _isBouncing = false;
+	private bool _isCompleted = false;
 
 	private Player _playerThatHit = null;
 	private Control codeEditorContainer;
+	private GameSession _gameSession;
 
 	public override void _Ready()
 	{
@@ -21,6 +23,10 @@ public partial class CodeBlock : AnimatableBody2D
 
 		var hitDetector = GetNode<Area2D>("Area2D");
 		hitDetector.BodyEntered += OnBodyEntered;
+
+		_gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+		if (_gameSession != null)
+			_gameSession.RuntimeReset += OnRuntimeReset;
 
 		codeEditorContainer = FindCodeEditorContainer();
 
@@ -39,12 +45,25 @@ public partial class CodeBlock : AnimatableBody2D
 		SyncToPhysics = true;
 	}
 
+	public override void _ExitTree()
+	{
+		if (_gameSession != null)
+			_gameSession.RuntimeReset -= OnRuntimeReset;
+	}
+
 	private void OnBodyEntered(Node body)
 	{
 		if (body is not Player player) return;
 		if (_isBouncing) return;
 
 		_playerThatHit = player;
+		if (_isCompleted)
+		{
+			_isBouncing = true;
+			AnimateBounce();
+			return;
+		}
+
 		TriggerBlock();
 	}
 
@@ -141,6 +160,16 @@ public partial class CodeBlock : AnimatableBody2D
 		var tree = GetTree();
 		if (tree != null)
 			tree.Paused = false;
+	}
+
+	public void MarkCompleted()
+	{
+		_isCompleted = true;
+	}
+
+	private void OnRuntimeReset()
+	{
+		_isCompleted = false;
 	}
 
 	private Control FindCodeEditorContainer()
