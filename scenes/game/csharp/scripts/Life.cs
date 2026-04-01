@@ -2,10 +2,17 @@ using Godot;
 
 public partial class Life : Area2D
 {
-    [Export] public int Amount { get; set; } = 1;
-    [Export] public bool OnlyOnce { get; set; } = true;
-    [Export] public float BobAmplitude { get; set; } = 3.0f;
-    [Export] public float BobSpeed { get; set; } = 2.0f;
+    [Export]
+    public int Amount { get; set; } = 1;
+
+    [Export]
+    public bool OnlyOnce { get; set; } = true;
+
+    [Export]
+    public float BobAmplitude { get; set; } = 3.0f;
+
+    [Export]
+    public float BobSpeed { get; set; } = 2.0f;
 
     private bool _collected;
     private CollisionShape2D _collisionShape;
@@ -66,10 +73,13 @@ public partial class Life : Area2D
     private void SetCollectedState(bool collected)
     {
         Visible = !collected;
-        Monitoring = !collected;
-        Monitorable = !collected;
+
+        SetDeferred(Area2D.PropertyName.Monitoring, !collected);
+        SetDeferred(Area2D.PropertyName.Monitorable, !collected);
+
         if (_collisionShape != null)
-            _collisionShape.Disabled = collected;
+            _collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, collected);
+
         if (_visual != null)
             _visual.Visible = !collected;
     }

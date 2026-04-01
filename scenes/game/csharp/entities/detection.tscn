@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://c2cw1mpld8cdw"]
+
+[ext_resource type="Script" uid="uid://b6alonc3g6xpu" path="res://scenes/game/csharp/scripts/Detection.cs" id="1_b8tld"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_respawn"]
+size = Vector2(16, 160)
+
+[node name="DetectionZone" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_b8tld")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_respawn")

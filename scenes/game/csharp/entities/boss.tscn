@@ -362,45 +362,39 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_fpmxe"]
-radius = 7.0
-height = 26.0
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2b4n1"]
+size = Vector2(11, 23)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_yag7t"]
-size = Vector2(12, 26)
+size = Vector2(21, 23)
 
 [node name="Boss" type="CharacterBody2D"]
 collision_layer = 4
 script = ExtResource("1_k14ak")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.75, 0.75)
 sprite_frames = SubResource("SpriteFrames_vdeju")
 animation = &"idle"
 autoplay = "idle"
 frame_progress = 0.144994
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-visible = false
-position = Vector2(2, 3)
-shape = SubResource("CapsuleShape2D_fpmxe")
+shape = SubResource("RectangleShape2D_2b4n1")
 
 [node name="Hitbox" type="Area2D" parent="." groups=["Enemies"]]
-visible = false
 collision_layer = 4
 collision_mask = 3
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
-position = Vector2(2, 3)
 shape = SubResource("RectangleShape2D_yag7t")
 debug_color = Color(0.967938, 0, 0.471078, 0.42)
 
 [node name="WallDetector" type="RayCast2D" parent="."]
-position = Vector2(2, 0)
 target_position = Vector2(11, 0)
 
 [node name="GroundDetector" type="RayCast2D" parent="."]
-position = Vector2(0, -4)
-target_position = Vector2(0, 19)
+target_position = Vector2(0, 12)
 
 [node name="PlayerDetector" type="RayCast2D" parent="."]
 position = Vector2(0, 8)
