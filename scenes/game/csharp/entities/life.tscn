@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=3 uid="uid://cbfcwhf3y3gep"]
+
+[ext_resource type="Script" uid="uid://bucymt7uw1ymn" path="res://scenes/game/csharp/scripts/Life.cs" id="1_hcxkw"]
+[ext_resource type="Texture2D" uid="uid://c3b5i50xyqbaj" path="res://scenes/game/csharp/materials/Custom/Milk_Cartons_Blue (16 x 16).png" id="2_l5pj5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ybi71"]
+
+[node name="Life" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1_hcxkw")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -4)
+scale = Vector2(1.0625, 1.125)
+texture = ExtResource("2_l5pj5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_ybi71")

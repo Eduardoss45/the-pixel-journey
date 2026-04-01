@@ -36,6 +36,7 @@ public partial class Player : CharacterBody2D
 	private float _forceAirRemaining;
 	private float _invulnerableRemaining;
 	private float _blinkTimer;
+	private bool _dialogLock;
 
 	[Signal]
 	public delegate void DeathTriggeredEventHandler();
@@ -70,6 +71,7 @@ public partial class Player : CharacterBody2D
 		_rightWallDetector = GetNode<RayCast2D>("RightWallDetector");
 		_reloadTimer = GetNode<Timer>("ReloadTimer");
 
+		RegisterDialogicHooks();
 		GoToIdleState();
 
 		GameSession.Instance?.SetRespawnPosition(GlobalPosition);
@@ -619,6 +621,35 @@ public partial class Player : CharacterBody2D
 
 	public void SetCanMove(bool value)
 	{
+		if (value && _dialogLock)
+		{
+			_canMove = false;
+			return;
+		}
+
 		_canMove = value;
+	}
+
+	private void RegisterDialogicHooks()
+	{
+		Node dialogic = GetNodeOrNull<Node>("/root/Dialogic");
+		if (dialogic == null)
+			return;
+
+		dialogic.Connect("timeline_started", new Callable(this, nameof(OnDialogStarted)));
+		dialogic.Connect("timeline_ended", new Callable(this, nameof(OnDialogEnded)));
+	}
+
+	private void OnDialogStarted()
+	{
+		_dialogLock = true;
+		_canMove = false;
+	}
+
+	private void OnDialogEnded()
+	{
+		_dialogLock = false;
+		if (!_deathTriggered)
+			_canMove = true;
 	}
 }

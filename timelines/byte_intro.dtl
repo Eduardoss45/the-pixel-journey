@@ -1,0 +1,72 @@
+byte: pixel… ouvi dizer que você vai enfrentar um quiz e alguns desafios de código.
+pixel: É… e eu não quero travar logo no começo.
+byte: Então vamos revisar alguns conceitos básicos de JavaScript. Nada muito avançado.
+pixel: Ótimo. Por onde começamos?
+byte: Variáveis. Variáveis guardam dados usados no jogo ou no código.
+pixel: Tipo guardar vida do personagem?
+byte: Exatamente. Ou coisas como energia, portas abertas ou pontuação.
+byte: Por exemplo\:
+byte: let energia = 80;
+pixel: Então energia guarda o número 80.
+byte: Correto. Normalmente usamos let quando o valor pode mudar.
+pixel: E quando o valor não muda?
+byte: Aí usamos const.
+byte: const nomeDoJogador = "Pixel";
+pixel: Então const é para valores fixos?
+byte: Isso. Depois de definido, o valor não pode ser alterado.
+pixel: Já vi algo chamado null. O que é isso?
+byte: null significa que a variável está vazia de propósito.
+byte: let alvo = null;
+pixel: Então não é erro?
+byte: Não. É apenas um valor que diz que ainda não há nada definido.
+pixel: E se eu usar uma variável antes de criar ela?
+byte: Se ela foi declarada com let, o código gera erro.
+byte: console.log(pontos);
+byte: let pontos = 10;
+pixel: Então primeiro declaro, depois uso.
+byte: Exatamente.
+pixel: Então deixa eu ver se entendi.
+pixel: let é para valores que mudam.
+pixel: const é para valores fixos.
+pixel: null significa vazio de propósito.
+pixel: E usar variável antes de declarar pode dar erro.
+byte: Perfeito.
+byte: Agora vamos pensar nos desafios do jogo.
+byte: Alguns vão pedir coisas bem diretas.
+byte: Por exemplo\:
+byte: Declare uma variável chamada portaAberta e defina como true.
+pixel: Algo assim?
+pixel: let portaAberta = true;
+byte: Correto. Isso abriria uma porta no jogo.
+pixel: E desafios com função?
+byte: Também teremos.
+byte: Exemplo\:
+byte: Crie uma função ativarPlataforma que retorne 1.
+byte: function ativarPlataforma() {
+byte: return 1;
+byte: }
+pixel: Então o jogo verifica o valor retornado?
+byte: Exatamente. O sistema usa esse retorno para ativar mecanismos.
+pixel: E condicionais?
+byte: Condicionais permitem tomar decisões.
+byte: if (energia > 50) {
+byte: plataformaAtiva = true;
+byte: }
+pixel: Então se a energia for maior que 50, a plataforma liga.
+byte: Isso mesmo.
+pixel: Acho que estou começando a entender.
+byte: Antes do quiz, memorize três coisas.
+byte: Primeiro\: leia exatamente o nome da variável ou função pedida.
+byte: Segundo\: use o tipo de valor correto, como true, número ou texto.
+byte: Terceiro\: JavaScript diferencia maiúsculas de minúsculas.
+pixel: Parece que o quiz vai tentar me confundir.
+byte: Não. Ele só testa sua atenção.
+pixel: Alguma última dica?
+byte: Sim.
+byte: Elimine alternativas impossíveis primeiro.
+byte: Compare com calma let, const e null.
+byte: E sempre releia a pergunta antes de confirmar.
+pixel: Certo.
+pixel: Acho que estou pronto.
+byte: Ótimo.
+byte: O quiz começa agora.

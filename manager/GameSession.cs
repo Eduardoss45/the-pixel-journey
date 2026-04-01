@@ -58,6 +58,15 @@ public partial class GameSession : Node
         return true;
     }
 
+    public void AddLives(int amount)
+    {
+        if (amount <= 0)
+            return;
+
+        Lives += amount;
+        EmitSignal(SignalName.LivesChanged, Lives);
+    }
+
     public void ResetGlobalRuntimeState()
     {
         var tree = GetTree();

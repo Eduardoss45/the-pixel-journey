@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://de64l76sremrc"
-path="res://.godot/imported/Milk_Cartons (16 x 16).png-fd530f28fb28b1061baee28602ab2f3a.ctex"
+uid="uid://c8nrw0bfy34m5"
+path="res://.godot/imported/Milk_Cartons_Pink (16 x 16).png-7c2e6f55e6b317804607a52515229570.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://scenes/game/csharp/sprites/boss/Milk_Cartons (16 x 16).png"
-dest_files=["res://.godot/imported/Milk_Cartons (16 x 16).png-fd530f28fb28b1061baee28602ab2f3a.ctex"]
+source_file="res://scenes/game/csharp/materials/Custom/Milk_Cartons_Pink (16 x 16).png"
+dest_files=["res://.godot/imported/Milk_Cartons_Pink (16 x 16).png-7c2e6f55e6b317804607a52515229570.ctex"]
 
 [params]
 

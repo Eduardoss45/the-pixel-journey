@@ -1,0 +1,131 @@
+using Godot;
+using System;
+
+public partial class Npc : CharacterBody2D
+{
+	[Export] public NodePath VisualPath { get; set; } = "AnimationSprite2D";
+	[Export] public NodePath InteractionAreaPath { get; set; } = "Area2D";
+	[Export] public float FaceDeadzone { get; set; } = 2.0f;
+	[Export] public bool AutoStartDialogue { get; set; } = true;
+	[Export] public float AutoStartDelaySeconds { get; set; } = 2.0f;
+	[Export] public bool ClickToStartDialogue { get; set; } = true;
+	[Export] public string TimelinePath { get; set; } = "res://timelines/byte_intro.dtl";
+	[Export] public string DialogicStyle { get; set; } = "res://styles/dialogs.tres";
+
+	private Node2D _visual;
+	private Player _player;
+	private Node _dialogic;
+	private bool _dialogStarted;
+	private Area2D _interactionArea;
+
+	public override void _Ready()
+	{
+		_dialogic = GetNodeOrNull<Node>("/root/Dialogic");
+		_player = GetTree().GetFirstNodeInGroup("Player") as Player;
+
+		if (VisualPath != null && !VisualPath.IsEmpty)
+			_visual = GetNodeOrNull<Node2D>(VisualPath);
+		if (_visual == null)
+			_visual = GetNodeOrNull<Node2D>("AnimationSprite2D") ??
+					  GetNodeOrNull<Node2D>("AnimatedSprite2D") ??
+					  GetNodeOrNull<Node2D>("Sprite2D");
+
+		if (InteractionAreaPath != null && !InteractionAreaPath.IsEmpty)
+			_interactionArea = GetNodeOrNull<Area2D>(InteractionAreaPath);
+		if (_interactionArea == null)
+			_interactionArea = GetNodeOrNull<Area2D>("Area2D");
+
+		if (_interactionArea != null)
+		{
+			_interactionArea.InputEvent += OnInteractionInput;
+			_interactionArea.Monitoring = true;
+			_interactionArea.Monitorable = false;
+			_interactionArea.InputPickable = true;
+		}
+
+		if (AutoStartDialogue && AutoStartDelaySeconds > 0.0f)
+			_ = StartDialogueAfterDelay();
+	}
+
+	public override void _Process(double delta)
+	{
+		UpdateFacing();
+	}
+
+	private void OnInteractionInput(Node viewport, InputEvent @event, long shapeIdx)
+	{
+		if (!ClickToStartDialogue)
+			return;
+
+		if (@event is InputEventMouseButton mouse && mouse.Pressed && mouse.ButtonIndex == MouseButton.Left)
+			StartDialogue();
+	}
+
+	private async System.Threading.Tasks.Task StartDialogueAfterDelay()
+	{
+		await ToSignal(GetTree().CreateTimer(AutoStartDelaySeconds), SceneTreeTimer.SignalName.Timeout);
+		StartDialogue();
+	}
+
+	private void StartDialogue()
+	{
+		if (_dialogStarted)
+			return;
+
+		if (_dialogic == null || string.IsNullOrWhiteSpace(TimelinePath))
+			return;
+
+		if (!string.IsNullOrWhiteSpace(DialogicStyle))
+		{
+			var stylesVariant = _dialogic.Get("Styles");
+			var styles = stylesVariant.VariantType == Variant.Type.Object
+				? stylesVariant.AsGodotObject() as Node
+				: null;
+			styles?.Call("change_style", DialogicStyle, true);
+		}
+
+		Variant timelineArg = TimelinePath;
+		if (TimelinePath.Contains("://") && ResourceLoader.Exists(TimelinePath))
+		{
+			var timelineRes = ResourceLoader.Load(TimelinePath);
+			if (timelineRes != null)
+				timelineArg = timelineRes;
+			else
+				GD.PrintErr($"[NPC] Falha ao carregar timeline: {TimelinePath}");
+		}
+
+		_dialogic.Call("start", timelineArg);
+		_dialogStarted = true;
+	}
+
+	private void UpdateFacing()
+	{
+		if (_player == null)
+			_player = GetTree().GetFirstNodeInGroup("Player") as Player;
+
+		if (_player == null || _visual == null)
+			return;
+
+		float deltaX = _player.GlobalPosition.X - GlobalPosition.X;
+		if (Mathf.Abs(deltaX) <= FaceDeadzone)
+			return;
+
+		bool faceRight = deltaX > 0.0f;
+
+		if (_visual is Sprite2D sprite)
+		{
+			sprite.FlipH = !faceRight;
+			return;
+		}
+
+		if (_visual is AnimatedSprite2D anim)
+		{
+			anim.FlipH = !faceRight;
+			return;
+		}
+
+		Vector2 scale = _visual.Scale;
+		scale.X = Mathf.Abs(scale.X) * (faceRight ? 1.0f : -1.0f);
+		_visual.Scale = scale;
+	}
+}
