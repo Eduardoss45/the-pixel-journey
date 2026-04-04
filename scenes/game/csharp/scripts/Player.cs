@@ -37,6 +37,9 @@ public partial class Player : CharacterBody2D
 	private float _invulnerableRemaining;
 	private float _blinkTimer;
 	private bool _dialogLock;
+	private float _stunRemaining;
+	private float _stunAnimDelayRemaining;
+	private bool _stunAnimPlayed;
 
 	[Signal]
 	public delegate void DeathTriggeredEventHandler();
@@ -71,6 +74,7 @@ public partial class Player : CharacterBody2D
 		_rightWallDetector = GetNode<RayCast2D>("RightWallDetector");
 		_reloadTimer = GetNode<Timer>("ReloadTimer");
 
+		_anim.AnimationFinished += OnAnimationFinished;
 		RegisterDialogicHooks();
 		GoToIdleState();
 
@@ -85,6 +89,7 @@ public partial class Player : CharacterBody2D
 		}
 
 		UpdateInvulnerability((float)delta);
+		UpdateStun((float)delta);
 
 		if (!_canMove)
 		{
@@ -630,6 +635,24 @@ public partial class Player : CharacterBody2D
 		_canMove = value;
 	}
 
+	public void ApplyStun(float seconds)
+	{
+		if (seconds <= 0.0f || _deathTriggered)
+			return;
+
+		_stunRemaining = Mathf.Max(_stunRemaining, seconds);
+		_canMove = false;
+		_stunAnimPlayed = false;
+	}
+
+	public void QueueStunAnimation(float delaySeconds)
+	{
+		if (_deathTriggered)
+			return;
+
+		_stunAnimDelayRemaining = Mathf.Max(0.0f, delaySeconds);
+	}
+
 	private void RegisterDialogicHooks()
 	{
 		Node dialogic = GetNodeOrNull<Node>("/root/Dialogic");
@@ -651,5 +674,45 @@ public partial class Player : CharacterBody2D
 		_dialogLock = false;
 		if (!_deathTriggered)
 			_canMove = true;
+	}
+
+	private void UpdateStun(float delta)
+	{
+		if (_stunRemaining <= 0.0f)
+			return;
+
+		_stunRemaining = Mathf.Max(0.0f, _stunRemaining - delta);
+		_canMove = false;
+
+		if (!_stunAnimPlayed)
+		{
+			_stunAnimDelayRemaining = Mathf.Max(0.0f, _stunAnimDelayRemaining - delta);
+			if (_stunAnimDelayRemaining <= 0.0f)
+			{
+				PlayStunAnimationOnce();
+				_stunAnimPlayed = true;
+			}
+		}
+
+		if (_stunRemaining <= 0.0f && !_dialogLock && !_deathTriggered)
+			_canMove = true;
+	}
+
+	private void PlayStunAnimationOnce()
+	{
+		if (_anim == null || !_anim.SpriteFrames.HasAnimation("stunned"))
+			return;
+
+		_anim.SpriteFrames.SetAnimationLoop("stunned", false);
+		_anim.Play("stunned");
+	}
+
+	private void OnAnimationFinished()
+	{
+		if (_anim.Animation == "stunned")
+		{
+			if (!_deathTriggered)
+				GoToIdleState();
+		}
 	}
 }

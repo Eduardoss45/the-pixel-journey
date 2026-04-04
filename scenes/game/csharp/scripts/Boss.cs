@@ -83,6 +83,39 @@ public partial class Boss : CharacterBody2D
     public float StompMinDownwardVelocity { get; set; } = 10.0f;
 
     [Export]
+    public float StompHorizontalAllowance { get; set; } = 10.0f;
+
+    [Export]
+    public bool BlockStompOnWall { get; set; } = true;
+
+    [Export]
+    public float WallPunishRange { get; set; } = 120.0f;
+
+    [Export]
+    public float WallPunishRetreatSeconds { get; set; } = 0.25f;
+
+    [Export]
+    public float WallPunishRetreatSpeed { get; set; } = 90.0f;
+
+    [Export]
+    public float WallPunishJumpVelocity { get; set; } = -420.0f;
+
+    [Export]
+    public float WallPunishCooldownSeconds { get; set; } = 2.0f;
+
+    [Export]
+    public float EarthquakeRange { get; set; } = 140.0f;
+
+    [Export]
+    public float EarthquakeStunSeconds { get; set; } = 0.6f;
+
+    [Export]
+    public float EarthquakeShakeSeconds { get; set; } = 0.35f;
+
+    [Export]
+    public float EarthquakeShakeStrength { get; set; } = 4.0f;
+
+    [Export]
     public float FireballRange { get; set; } = 480.0f;
 
     [Export]
@@ -160,6 +193,10 @@ public partial class Boss : CharacterBody2D
     private float _postQuizImmunityRemaining;
     private Player _attackTargetPlayer;
     private bool _attackExceptionApplied;
+    private float _wallPunishCooldownRemaining;
+    private float _wallPunishWindupRemaining;
+    private bool _wallPunishActive;
+    private int _wallPunishDirection;
 
     private bool _isActive;
 
@@ -260,6 +297,11 @@ public partial class Boss : CharacterBody2D
             _comboCooldownRemaining = Mathf.Max(0.0f, _comboCooldownRemaining - (float)delta);
         }
 
+        if (_wallPunishCooldownRemaining > 0.0f)
+        {
+            _wallPunishCooldownRemaining = Mathf.Max(0.0f, _wallPunishCooldownRemaining - (float)delta);
+        }
+
         if (_fireballCooldownRemaining > 0.0f)
         {
             _fireballCooldownRemaining = Mathf.Max(0.0f, _fireballCooldownRemaining - (float)delta);
@@ -275,6 +317,22 @@ public partial class Boss : CharacterBody2D
             _contactCooldown = Mathf.Max(0.0f, _contactCooldown - (float)delta);
             Velocity = new Vector2(_contactVelocity.X, Velocity.Y);
             MoveAndSlide();
+            return;
+        }
+
+        if (_wallPunishWindupRemaining > 0.0f)
+        {
+            _wallPunishWindupRemaining = Mathf.Max(0.0f, _wallPunishWindupRemaining - (float)delta);
+            int retreatDirection = -_wallPunishDirection;
+            Velocity = new Vector2(WallPunishRetreatSpeed * retreatDirection, Velocity.Y);
+            if (IsOnFloor() && _anim.Animation != "walk")
+                _anim.Play("walk");
+            MoveAndSlide();
+
+            if (_wallPunishWindupRemaining <= 0.0f)
+            {
+                StartWallPunishJump();
+            }
             return;
         }
 
@@ -315,6 +373,10 @@ public partial class Boss : CharacterBody2D
         else if (_isChasing && player != null)
         {
             _chaseTime += (float)delta;
+            if (TryStartWallPunish(player))
+            {
+                return;
+            }
             if (TryStartCombo(player))
             {
                 ProcessCombo();
@@ -604,7 +666,7 @@ public partial class Boss : CharacterBody2D
         _attackTargetPlayer = player as Player;
         _attackExceptionApplied = false;
 
-        _attackDesiredVx = ComputeAttackDesiredVx();
+        _attackDesiredVx = ComputeDesiredVx(_attackTargetX, AttackJumpVelocity, AttackJumpHorizontalSpeed);
 
         float direction = _attackDesiredVx >= 0.0f ? 1.0f : -1.0f;
         if (direction != _direction)
@@ -648,6 +710,12 @@ public partial class Boss : CharacterBody2D
             RestoreAttackCollisionException();
             _status = BossState.Chase;
             _attackLeftFloor = false;
+            if (_wallPunishActive)
+            {
+                TriggerEarthquake(_attackTargetPlayer ?? GetPlayer());
+                _wallPunishActive = false;
+                _wallPunishCooldownRemaining = WallPunishCooldownSeconds;
+            }
             if (_comboState == ComboState.JumpAttack)
             {
                 _comboState = ComboState.Punch;
@@ -707,17 +775,84 @@ public partial class Boss : CharacterBody2D
 
     private float ComputeAttackDesiredVx()
     {
+        return ComputeDesiredVx(_attackTargetX, AttackJumpVelocity, AttackJumpHorizontalSpeed);
+    }
+
+    private float ComputeDesiredVx(float targetX, float jumpVelocity, float maxHorizSpeed)
+    {
         float gravity = GetGravity().Y;
-        float time = gravity > 0.0f ? (2.0f * -AttackJumpVelocity) / gravity : 0.0f;
+        float time = gravity > 0.0f ? (2.0f * -jumpVelocity) / gravity : 0.0f;
 
         float desiredVx = 0.0f;
         if (time > 0.0f)
-            desiredVx = (_attackTargetX - GlobalPosition.X) / time;
+            desiredVx = (targetX - GlobalPosition.X) / time;
         else
-            desiredVx =
-                AttackJumpHorizontalSpeed * (_attackTargetX >= GlobalPosition.X ? 1.0f : -1.0f);
+            desiredVx = maxHorizSpeed * (targetX >= GlobalPosition.X ? 1.0f : -1.0f);
 
-        return Mathf.Clamp(desiredVx, -AttackJumpHorizontalSpeed, AttackJumpHorizontalSpeed);
+        return Mathf.Clamp(desiredVx, -maxHorizSpeed, maxHorizSpeed);
+    }
+
+    private bool TryStartWallPunish(Player player)
+    {
+        if (player == null)
+            return false;
+        if (!player.IsOnWall())
+            return false;
+        if (!IsOnFloor())
+            return false;
+        if (_comboState != ComboState.None || _status == BossState.AttackJump)
+            return false;
+        if (_wallPunishCooldownRemaining > 0.0f)
+            return false;
+
+        float horizontalDistance = Mathf.Abs(player.GlobalPosition.X - GlobalPosition.X);
+        if (horizontalDistance > WallPunishRange)
+            return false;
+
+        _wallPunishDirection = player.GlobalPosition.X >= GlobalPosition.X ? 1 : -1;
+        if (_wallPunishDirection != _direction)
+            FlipDirection();
+
+        _attackTargetX = player.GlobalPosition.X;
+        _attackTargetPlayer = player;
+        _wallPunishActive = true;
+        _wallPunishWindupRemaining = WallPunishRetreatSeconds;
+        _attackLeftFloor = false;
+        _status = BossState.Chase;
+        return true;
+    }
+
+    private void StartWallPunishJump()
+    {
+        _status = BossState.AttackJump;
+        _attackDesiredVx = ComputeDesiredVx(
+            _attackTargetX,
+            WallPunishJumpVelocity,
+            AttackJumpHorizontalSpeed
+        );
+
+        float direction = _attackDesiredVx >= 0.0f ? 1.0f : -1.0f;
+        if (direction != _direction)
+            FlipDirection();
+
+        Velocity = new Vector2(_attackDesiredVx, WallPunishJumpVelocity);
+        _anim.Play("jump");
+    }
+
+    private void TriggerEarthquake(Player player)
+    {
+        if (player != null)
+        {
+            float distance = GlobalPosition.DistanceTo(player.GlobalPosition);
+            if (distance <= EarthquakeRange)
+            {
+                player.ApplyStun(EarthquakeStunSeconds);
+                player.QueueStunAnimation(EarthquakeShakeSeconds);
+            }
+        }
+
+        var camera = GetViewport().GetCamera2D() as Camera;
+        camera?.StartShake(EarthquakeShakeSeconds, EarthquakeShakeStrength);
     }
 
     private void ApplyAttackCollisionException()
@@ -773,6 +908,16 @@ public partial class Boss : CharacterBody2D
         bool isStomp =
             player.Velocity.Y > StompMinDownwardVelocity
             && player.GlobalPosition.Y < GlobalPosition.Y + StompVerticalAllowance;
+
+        if (isStomp && BlockStompOnWall && player.IsOnWall())
+            isStomp = false;
+
+        if (isStomp)
+        {
+            float horizontalDelta = Mathf.Abs(player.GlobalPosition.X - GlobalPosition.X);
+            if (horizontalDelta > StompHorizontalAllowance)
+                isStomp = false;
+        }
 
         if (isStomp)
         {
@@ -920,6 +1065,10 @@ public partial class Boss : CharacterBody2D
         _comboState = ComboState.None;
         _comboCooldownRemaining = 0.0f;
         _comboTargetPlayer = null;
+
+        _wallPunishCooldownRemaining = 0.0f;
+        _wallPunishWindupRemaining = 0.0f;
+        _wallPunishActive = false;
 
         _chaseTime = 0.0f;
         _reactionTimer = 0.0f;

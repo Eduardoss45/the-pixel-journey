@@ -1,4 +1,4 @@
-[gd_scene load_steps=38 format=3 uid="uid://cgor0dilaoak3"]
+[gd_scene load_steps=47 format=3 uid="uid://cgor0dilaoak3"]
 
 [ext_resource type="Script" uid="uid://crf1isaupq8cq" path="res://scenes/game/csharp/scripts/Player.cs" id="1_n2u3w"]
 [ext_resource type="Texture2D" uid="uid://d4ad5ql78vh28" path="res://gdscript/sprites/1 - Penguin/Ducking (16 x 16).png" id="2_4kd6g"]
@@ -8,9 +8,13 @@
 [ext_resource type="Texture2D" uid="uid://cysnwswt3muot" path="res://gdscript/sprites/1 - Penguin/Idle (16 x 16).png" id="6_jhwgv"]
 [ext_resource type="Texture2D" uid="uid://cpemranmom4hy" path="res://gdscript/sprites/1 - Penguin/Jump (16 x 16).png" id="7_enf11"]
 [ext_resource type="Texture2D" uid="uid://dp6mi36fbhouq" path="res://gdscript/sprites/1 - Penguin/Belly_Sliding (16 x 16).png" id="8_jt5be"]
+[ext_resource type="Texture2D" uid="uid://pms8xdejlbyo" path="res://scenes/game/csharp/sprites/penguin/Hurt (16 x 16).png" id="9_jhwgv"]
 [ext_resource type="Texture2D" uid="uid://dvs5tsup0h5oi" path="res://gdscript/sprites/1 - Penguin/Swimming (16 x 16).png" id="9_yipcu"]
+[ext_resource type="Texture2D" uid="uid://uvruoy0ljvi4" path="res://scenes/game/csharp/sprites/penguin/Surprised (16 x 16).png" id="10_enf11"]
 [ext_resource type="Texture2D" uid="uid://x4txytiptfta" path="res://gdscript/sprites/1 - Penguin/Waddling (16 x 16).png" id="10_kv6bd"]
 [ext_resource type="Texture2D" uid="uid://lihgflpx86sr" path="res://scenes/game/csharp/sprites/penguin/Wall_Slide (16x16).png" id="11_ereh2"]
+[ext_resource type="Texture2D" uid="uid://byfyiycssnmmf" path="res://scenes/game/csharp/sprites/penguin/Lying_On_Ground (16 x 16).png" id="11_jt5be"]
+[ext_resource type="Texture2D" uid="uid://chcrrpshmxyib" path="res://scenes/game/csharp/sprites/penguin/Sitting (16 x 16).png" id="12_yipcu"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e8xqm"]
 radius = 6.0
@@ -51,6 +55,26 @@ region = Rect2(16, 0, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_8rie4"]
 atlas = ExtResource("8_jt5be")
 region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kv6bd"]
+atlas = ExtResource("9_jhwgv")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ereh2"]
+atlas = ExtResource("10_enf11")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_o2y88"]
+atlas = ExtResource("11_jt5be")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56gb7"]
+atlas = ExtResource("12_yipcu")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a8p17"]
+atlas = ExtResource("12_yipcu")
+region = Rect2(16, 0, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_cicqb"]
 atlas = ExtResource("9_yipcu")
@@ -181,6 +205,26 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_kv6bd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ereh2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_o2y88")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56gb7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a8p17")
+}],
+"loop": true,
+"name": &"stunned",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_cicqb")
 }, {
 "duration": 1.0,
@@ -259,7 +303,8 @@ shape = SubResource("CapsuleShape2D_e8xqm")
 [node name="PixelAnimation" type="AnimatedSprite2D" parent="."]
 z_index = 1
 sprite_frames = SubResource("SpriteFrames_o2y88")
-animation = &"idle"
+animation = &"stunned"
+frame_progress = 0.513621
 
 [node name="Hitbox" type="Area2D" parent="."]
 visible = false

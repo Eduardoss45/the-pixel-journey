@@ -202,7 +202,7 @@ animations = [{
 [node name="Tropic" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
-position = Vector2(8, 168)
+position = Vector2(3208, 120)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10
@@ -505,6 +505,7 @@ position = Vector2(3208, -64)
 
 [node name="Byte" parent="Objects" instance=ExtResource("32_ws0u1")]
 position = Vector2(48, 160)
+AutoStartDialogue = false
 
 [node name="DetectionZone" parent="Objects" instance=ExtResource("28_aj478")]
 position = Vector2(3240, 80)
