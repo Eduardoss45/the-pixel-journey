@@ -89,6 +89,18 @@ public partial class Boss : CharacterBody2D
     public bool BlockStompOnWall { get; set; } = true;
 
     [Export]
+    public float StompCooldownSeconds { get; set; } = 0.4f;
+
+    [Export]
+    public float StompKnockbackX { get; set; } = 220.0f;
+
+    [Export]
+    public float StompKnockbackY { get; set; } = -40.0f;
+
+    [Export]
+    public float StompSeparationSeconds { get; set; } = 0.25f;
+
+    [Export]
     public float WallPunishRange { get; set; } = 120.0f;
 
     [Export]
@@ -169,6 +181,7 @@ public partial class Boss : CharacterBody2D
     private BossState _status;
     private int _direction = 1;
     private int _lives;
+    private int _pendingStompIndex;
     private bool _quizActive;
     private bool _isChasing;
     private float _reactionTimer;
@@ -197,6 +210,9 @@ public partial class Boss : CharacterBody2D
     private float _wallPunishWindupRemaining;
     private bool _wallPunishActive;
     private int _wallPunishDirection;
+    private float _stompCooldownRemaining;
+    private Player _stompSeparatedPlayer;
+    private bool _stompSeparationActive;
 
     private bool _isActive;
 
@@ -295,6 +311,11 @@ public partial class Boss : CharacterBody2D
         if (_comboCooldownRemaining > 0.0f)
         {
             _comboCooldownRemaining = Mathf.Max(0.0f, _comboCooldownRemaining - (float)delta);
+        }
+
+        if (_stompCooldownRemaining > 0.0f)
+        {
+            _stompCooldownRemaining = Mathf.Max(0.0f, _stompCooldownRemaining - (float)delta);
         }
 
         if (_wallPunishCooldownRemaining > 0.0f)
@@ -421,6 +442,7 @@ public partial class Boss : CharacterBody2D
             return;
 
         _status = BossState.Idle;
+        SetCollisionEnabled(true);
         _anim.Play("idle");
     }
 
@@ -430,6 +452,7 @@ public partial class Boss : CharacterBody2D
             return;
 
         _status = BossState.Chase;
+        SetCollisionEnabled(true);
         _anim.Play("walk");
     }
 
@@ -437,6 +460,7 @@ public partial class Boss : CharacterBody2D
     {
         _status = BossState.Stunned;
         _anim.Play("stunned");
+        SetCollisionEnabled(false);
         Velocity = Vector2.Zero;
     }
 
@@ -909,6 +933,9 @@ public partial class Boss : CharacterBody2D
             player.Velocity.Y > StompMinDownwardVelocity
             && player.GlobalPosition.Y < GlobalPosition.Y + StompVerticalAllowance;
 
+        if (_stompCooldownRemaining > 0.0f)
+            isStomp = false;
+
         if (isStomp && BlockStompOnWall && player.IsOnWall())
             isStomp = false;
 
@@ -921,7 +948,8 @@ public partial class Boss : CharacterBody2D
 
         if (isStomp)
         {
-            player.Velocity = new Vector2(player.Velocity.X, Player.JumpVelocity);
+            ApplyStompSeparation(player);
+            _stompCooldownRemaining = StompCooldownSeconds;
             HandleStomp(player);
             return;
         }
@@ -940,10 +968,35 @@ public partial class Boss : CharacterBody2D
             return;
 
         _playerThatHit = player;
-        _lives = Mathf.Max(0, _lives - 1);
+        _pendingStompIndex = GetStompIndex();
 
         GoToStunnedState();
-        OpenQuizForStomp(GetStompIndex());
+        OpenQuizForStomp(_pendingStompIndex);
+    }
+
+    private async void ApplyStompSeparation(Player player)
+    {
+        float directionAway = player.GlobalPosition.X >= GlobalPosition.X ? 1.0f : -1.0f;
+        player.Velocity = new Vector2(directionAway * StompKnockbackX, StompKnockbackY);
+
+        if (StompSeparationSeconds <= 0.0f)
+            return;
+
+        if (_stompSeparationActive && _stompSeparatedPlayer != null)
+            RemoveCollisionExceptionWith(_stompSeparatedPlayer);
+
+        _stompSeparatedPlayer = player;
+        _stompSeparationActive = true;
+        AddCollisionExceptionWith(player);
+
+        await ToSignal(GetTree().CreateTimer(StompSeparationSeconds), SceneTreeTimer.SignalName.Timeout);
+
+        if (_stompSeparatedPlayer == player)
+        {
+            RemoveCollisionExceptionWith(player);
+            _stompSeparatedPlayer = null;
+            _stompSeparationActive = false;
+        }
     }
 
     public void TakeDamage()
@@ -970,7 +1023,7 @@ public partial class Boss : CharacterBody2D
 
     private int GetStompIndex()
     {
-        int index = InitialLives - _lives - 1;
+        int index = InitialLives - _lives;
         index = Mathf.Clamp(index, 0, StompQuestionIds.Length - 1);
         return index;
     }
@@ -1015,11 +1068,19 @@ public partial class Boss : CharacterBody2D
             tree.Paused = true;
 
         _quizActive = true;
-        _quizUI.StartQuiz(
+        _quizUI.StartQuizWithResult(
             questions,
-            () =>
+            wasCorrect =>
             {
-                CloseQuiz();
+                CloseQuiz(wasCorrect);
+                if (wasCorrect)
+                {
+                    _lives = Mathf.Max(0, _lives - 1);
+                }
+                else
+                {
+                    GameSession.Instance?.ConsumeLifeSilently();
+                }
                 ResumeAfterQuiz();
             }
         );
@@ -1027,7 +1088,7 @@ public partial class Boss : CharacterBody2D
         _playerThatHit?.SetCanMove(false);
     }
 
-    private void CloseQuiz()
+    private void CloseQuiz(bool applyImmunity)
     {
         if (_quizContainer == null)
             return;
@@ -1049,8 +1110,22 @@ public partial class Boss : CharacterBody2D
             tree.Paused = false;
 
         _quizActive = false;
-        _postQuizImmunityRemaining = PostQuizImmunitySeconds;
-        GoToStunnedState();
+        if (applyImmunity)
+        {
+            _postQuizImmunityRemaining = PostQuizImmunitySeconds;
+            GoToStunnedState();
+        }
+        else
+        {
+            _postQuizImmunityRemaining = 0.0f;
+            RestoreAttackCollisionException();
+            ResetAbilityCooldowns();
+            GoToChaseState();
+            SetCollisionEnabled(true);
+            _isChasing = true;
+            _reactionTimer = 0.0f;
+            _chaseTime = 0.0f;
+        }
     }
 
     private void ResetAbilityCooldowns()
@@ -1069,6 +1144,11 @@ public partial class Boss : CharacterBody2D
         _wallPunishCooldownRemaining = 0.0f;
         _wallPunishWindupRemaining = 0.0f;
         _wallPunishActive = false;
+        _stompCooldownRemaining = 0.0f;
+        if (_stompSeparationActive && _stompSeparatedPlayer != null)
+            RemoveCollisionExceptionWith(_stompSeparatedPlayer);
+        _stompSeparationActive = false;
+        _stompSeparatedPlayer = null;
 
         _chaseTime = 0.0f;
         _reactionTimer = 0.0f;
@@ -1094,9 +1174,9 @@ public partial class Boss : CharacterBody2D
         Velocity = Vector2.Zero;
         _anim.Play("death");
 
-        _hitbox.SetDeferred(Node.PropertyName.ProcessMode, (int)ProcessModeEnum.Disabled);
-        if (_bodyCollision != null)
-            _bodyCollision.SetDeferred("disabled", true);
+        GameSession.Instance?.MarkBossDefeated();
+
+        SetCollisionEnabled(false);
     }
 
     private void ApplyContactSeparation(Player player)
@@ -1138,5 +1218,13 @@ public partial class Boss : CharacterBody2D
             resized[i] = StompQuestionIds[i];
 
         StompQuestionIds = resized;
+    }
+
+    private void SetCollisionEnabled(bool enabled)
+    {
+        if (_hitbox != null)
+            _hitbox.SetDeferred(Node.PropertyName.ProcessMode, enabled ? (int)ProcessModeEnum.Inherit : (int)ProcessModeEnum.Disabled);
+        if (_bodyCollision != null)
+            _bodyCollision.SetDeferred("disabled", !enabled);
     }
 }

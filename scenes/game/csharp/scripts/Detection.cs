@@ -44,14 +44,18 @@ public partial class Detection : Area2D
         if (body is not Player)
             return;
 
-        if (_boss == null)
-            _boss = ResolveBoss();
-        if (_boss == null)
-            return;
+		if (_boss == null)
+			_boss = ResolveBoss();
+		if (_boss == null)
+			return;
 
-        if (ActivateOnEnter)
-            _boss.SetActive(ActivateValue);
+		if (ActivateOnEnter)
+			_boss.SetActive(ActivateValue);
 
-        _activated = true;
-    }
+		var gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+		if (gameSession != null)
+			gameSession.SetBossActive(ActivateValue);
+
+		_activated = true;
+	}
 }

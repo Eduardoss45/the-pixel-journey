@@ -199,6 +199,12 @@ public partial class Player : CharacterBody2D
 
 	private void GoToWallState()
 	{
+		if (!CanWallInteract())
+		{
+			GoToFallState();
+			return;
+		}
+
 		_status = PlayerState.Wall;
 		_anim.Play("wall");
 		Velocity = Vector2.Zero;
@@ -330,7 +336,7 @@ public partial class Player : CharacterBody2D
 			return;
 		}
 
-		if ((_leftWallDetector.IsColliding() || _rightWallDetector.IsColliding()) && IsOnWall())
+		if (CanWallInteract() && (_leftWallDetector.IsColliding() || _rightWallDetector.IsColliding()) && IsOnWall())
 		{
 			GoToWallState();
 		}
@@ -369,6 +375,12 @@ public partial class Player : CharacterBody2D
 
 	private void WallState(float delta)
 	{
+		if (!CanWallInteract())
+		{
+			GoToFallState();
+			return;
+		}
+
 		Velocity = new Vector2(Velocity.X, Velocity.Y + WallAcceleration * delta);
 
 		if (_leftWallDetector.IsColliding())
@@ -674,6 +686,18 @@ public partial class Player : CharacterBody2D
 		_dialogLock = false;
 		if (!_deathTriggered)
 			_canMove = true;
+	}
+
+	private bool CanWallInteract()
+	{
+		var gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+		if (gameSession == null)
+			return true;
+
+		if (gameSession.BossDefeated)
+			return true;
+
+		return !gameSession.BossActive;
 	}
 
 	private void UpdateStun(float delta)

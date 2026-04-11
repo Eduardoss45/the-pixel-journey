@@ -14,6 +14,9 @@ public partial class QuizUI : Control
 	private int totalQuestions = 0;
 	private string selectedKey = null;
 	private CheckBox selectedCheckBox = null;
+	private Action<bool> resultCallback = null;
+	private bool closeOnWrong = false;
+	private bool closeImmediately = false;
 
 	[Export] public NodePath PlayerPath { get; set; }
 	private Node playerNode;
@@ -44,6 +47,43 @@ public partial class QuizUI : Control
 	public void StartQuiz(Godot.Collections.Array<QuizQuestion> questions, Action onComplete)
 	{
 		OnQuizFinished = onComplete;
+		resultCallback = null;
+		closeOnWrong = false;
+		closeImmediately = false;
+
+		pendingQuestions.Clear();
+		foreach (var q in questions)
+			pendingQuestions.Add(q);
+
+		totalQuestions = pendingQuestions.Count;
+		correctCount = 0;
+
+		Visible = true;
+		playerNode?.Call("SetCanMove", false);
+
+		if (pendingQuestions.Count == 0)
+		{
+			instructionLabel.Text = "Nenhuma pergunta configurada para este quiz.";
+			verifyButton.Disabled = true;
+			UpdateVerifyStyle();
+			UpdateProgress();
+			return;
+		}
+
+		LoadCurrentQuestion();
+	}
+
+	public void StartQuizWithResult(
+		Godot.Collections.Array<QuizQuestion> questions,
+		Action<bool> onResult,
+		bool closeOnWrongAnswer = true,
+		bool closeImmediatelyOnFinish = true
+	)
+	{
+		OnQuizFinished = null;
+		resultCallback = onResult;
+		closeOnWrong = closeOnWrongAnswer;
+		closeImmediately = closeImmediatelyOnFinish;
 
 		pendingQuestions.Clear();
 		foreach (var q in questions)
@@ -134,7 +174,8 @@ public partial class QuizUI : Control
 				selectedCheckBox.AddThemeColorOverride("font_color", Colors.Red);
 
 			pendingQuestions.RemoveAt(0);
-			pendingQuestions.Add(q);
+			if (!closeOnWrong)
+				pendingQuestions.Add(q);
 
 			var timer = GetTree().CreateTimer(1.2);
 			timer.Timeout += () =>
@@ -142,6 +183,21 @@ public partial class QuizUI : Control
 				if (IsInstanceValid(selectedCheckBox))
 					selectedCheckBox.RemoveThemeColorOverride("font_color");
 			};
+		}
+
+		if (resultCallback != null)
+		{
+			if (!isCorrect && closeOnWrong)
+			{
+				FinishQuizWithResult(false, true);
+				return;
+			}
+
+			if (pendingQuestions.Count == 0)
+			{
+				FinishQuizWithResult(true, closeImmediately);
+				return;
+			}
 		}
 
 		if (pendingQuestions.Count == 0)
@@ -193,6 +249,31 @@ public partial class QuizUI : Control
 			Visible = false;
 			playerNode?.Call("SetCanMove", true);
 			OnQuizFinished?.Invoke();
+		};
+	}
+
+	private void FinishQuizWithResult(bool wasCorrect, bool immediate)
+	{
+		verifyButton.Disabled = true;
+		UpdateVerifyStyle();
+		progressLabel.Text = $"Etapas: {totalQuestions}/{totalQuestions}";
+
+		if (immediate)
+		{
+			Visible = false;
+			playerNode?.Call("SetCanMove", true);
+			resultCallback?.Invoke(wasCorrect);
+			resultCallback = null;
+			return;
+		}
+
+		var timer = GetTree().CreateTimer(2.0);
+		timer.Timeout += () =>
+		{
+			Visible = false;
+			playerNode?.Call("SetCanMove", true);
+			resultCallback?.Invoke(wasCorrect);
+			resultCallback = null;
 		};
 	}
 

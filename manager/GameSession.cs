@@ -22,6 +22,8 @@ public partial class GameSession : Node
     public GameState State { get; private set; } = GameState.Playing;
     public Vector2 RespawnPosition { get; private set; } = Vector2.Zero;
     public bool HasRespawnPosition { get; private set; }
+    public bool BossDefeated { get; private set; }
+    public bool BossActive { get; private set; }
 
     public override void _Ready()
     {
@@ -34,6 +36,8 @@ public partial class GameSession : Node
         SetState(GameState.Playing);
         EmitSignal(SignalName.LivesChanged, Lives);
         ResetRespawnPosition();
+        BossDefeated = false;
+        BossActive = false;
     }
 
     public void EnterPlayingState()
@@ -56,6 +60,16 @@ public partial class GameSession : Node
 
         SetState(Lives > 0 ? GameState.PlayerDead : GameState.GameOver);
         return true;
+    }
+
+    public bool ConsumeLifeSilently()
+    {
+        if (Lives <= 0)
+            return false;
+
+        Lives = Mathf.Max(0, Lives - 1);
+        EmitSignal(SignalName.LivesChanged, Lives);
+        return Lives > 0;
     }
 
     public void AddLives(int amount)
@@ -93,6 +107,22 @@ public partial class GameSession : Node
     {
         HasRespawnPosition = false;
         RespawnPosition = Vector2.Zero;
+    }
+
+    public void MarkBossDefeated()
+    {
+        BossDefeated = true;
+        BossActive = false;
+    }
+
+    public void SetBossActive(bool value)
+    {
+        BossActive = value;
+        if (!value && !BossDefeated)
+        {
+            // keep defeated state if already set
+            BossDefeated = false;
+        }
     }
 
     private void SetState(GameState newState)
