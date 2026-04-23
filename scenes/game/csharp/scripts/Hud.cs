@@ -100,6 +100,7 @@ public partial class Hud : CanvasLayer
 			return;
 
 		deathFlowRunning = true;
+		SfxBus.Instance?.PlayLoose();
 		player?.SetCanMove(false);
 		CloseInformationMenu();
 
@@ -146,25 +147,29 @@ public partial class Hud : CanvasLayer
 
 		if (menuContainer.Visible)
 		{
-			CloseInformationMenu();
+			CloseInformationMenu(true);
 			player?.SetCanMove(true);
 			return;
 		}
 
 		menuContainer.Visible = true;
 		informationMenu.OpenMenu();
+		SfxBus.Instance?.PlayOpen();
 		player?.SetCanMove(false);
 	}
 
 	private void OnInformationMenuClosed()
 	{
-		CloseInformationMenu();
+		CloseInformationMenu(true);
 		if (!deathFlowRunning && gameSession != null && gameSession.State == GameSession.GameState.Playing)
 			player?.SetCanMove(true);
 	}
 
-	private void CloseInformationMenu()
+	private void CloseInformationMenu(bool playSfx = false)
 	{
+		if (playSfx && menuContainer != null && menuContainer.Visible)
+			SfxBus.Instance?.PlayClose();
+
 		informationMenu?.CloseMenu();
 		if (menuContainer != null)
 			menuContainer.Visible = false;

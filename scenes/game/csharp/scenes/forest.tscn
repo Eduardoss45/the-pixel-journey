@@ -112,4 +112,3 @@ metadata/_edit_group_ = true
 [node name="Wall" type="TileMapLayer" parent="Interactive"]
 tile_map_data = PackedByteArray("AAARAAkABAADAAEAAAARAAoABAADAAEAAAAJAAoABAADAAEAAAAJAAkABAADAAEAAAA=")
 tile_set = ExtResource("2_3pfox")
-

@@ -60,6 +60,7 @@ public partial class Life : Area2D
 
         var gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
         gameSession?.AddLives(Amount);
+        SfxBus.Instance?.PlayCollect();
         _collected = true;
         SetCollectedState(true);
     }

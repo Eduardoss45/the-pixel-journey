@@ -119,6 +119,7 @@ public partial class QuizBlock : AnimatableBody2D
 
 		quizContainer.Visible = true;
 		quizContainer.ProcessMode = ProcessModeEnum.Always;
+		SfxBus.Instance?.PlayOpen();
 
 		var tree = GetTree();
 		if (tree != null)
@@ -137,6 +138,8 @@ public partial class QuizBlock : AnimatableBody2D
 	public void CloseQuiz()
 	{
 		if (quizContainer == null) return;
+		if (quizContainer.Visible)
+			SfxBus.Instance?.PlayClose();
 
 		quizContainer.Visible = false;
 		quizContainer.ProcessMode = ProcessModeEnum.Disabled;

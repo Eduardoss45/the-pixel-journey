@@ -241,6 +241,8 @@ public partial class Boss : CharacterBody2D
         }
 
         _isActive = StartsActive;
+        var gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+        gameSession?.SetBossActive(_isActive);
         GoToIdleState();
     }
 
@@ -421,6 +423,8 @@ public partial class Boss : CharacterBody2D
     public void SetActive(bool value)
     {
         _isActive = value;
+        var gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+        gameSession?.SetBossActive(_isActive);
         if (!_isActive)
         {
             _isChasing = false;
@@ -1062,6 +1066,7 @@ public partial class Boss : CharacterBody2D
 
         _quizContainer.Visible = true;
         _quizContainer.ProcessMode = ProcessModeEnum.Always;
+        SfxBus.Instance?.PlayOpen();
 
         var tree = GetTree();
         if (tree != null)
@@ -1092,6 +1097,8 @@ public partial class Boss : CharacterBody2D
     {
         if (_quizContainer == null)
             return;
+        if (_quizContainer.Visible)
+            SfxBus.Instance?.PlayClose();
 
         _quizContainer.Visible = false;
         _quizContainer.ProcessMode = ProcessModeEnum.Disabled;
@@ -1173,6 +1180,7 @@ public partial class Boss : CharacterBody2D
         _status = BossState.Dead;
         Velocity = Vector2.Zero;
         _anim.Play("death");
+        SfxBus.Instance?.PlayElimination();
 
         GameSession.Instance?.MarkBossDefeated();
 

@@ -179,6 +179,7 @@ public partial class Skeleton : CharacterBody2D
 		if (_status == SkeletonState.Hurt || _status == SkeletonState.Dead)
 			return;
 
+		SfxBus.Instance?.PlayElimination();
 		GoToHurtState();
 	}
 

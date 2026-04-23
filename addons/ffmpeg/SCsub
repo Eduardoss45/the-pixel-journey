@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+from misc.utility.scons_hints import *
+
+import gdextension_build.ffmpeg_download as ffmpeg_download
+
+Import("env")
+
+if env["platform"] == "linuxbsd":
+    if "RPATH" not in env:
+        env.Append(RPATH=env.Literal("\\$$ORIGIN"))
+    env.Append(LINKFLAGS=["-Wl,--disable-new-dtags"])
+
+env_ffmpeg = env.Clone()
+
+module_obj = []
+
+excluded = []
+
+sources = [x for x in Glob("*.cpp") if str(x) not in excluded]
+
+ffmpeg_path = env["ffmpeg_path"]
+
+env_ffmpeg.Prepend(CPPPATH=f"{ffmpeg_path}/include")
+env_ffmpeg.Prepend(CPPDEFINES="ENABLE_STREAM_INFO")
+env.Append(LIBPATH=[f"{ffmpeg_path}/lib"])
+
+ffmpeg_libs = ["avcodec", "avfilter", "avformat", "avutil", "swresample", "swscale"]
+
+if env.msvc:
+    # MSVC: Think Different(tm)
+    env.Append(LINKFLAGS=[x + ".lib" for x in ffmpeg_libs])
+    env_ffmpeg.Append(CXXFLAGS=["/std:c++20"])
+else:
+    # mingw
+    env.Append(LIBS=ffmpeg_libs)
+
+ffmpeg_install_action = ffmpeg_download.ffmpeg_install(env_ffmpeg, "#bin", ffmpeg_path)
+
+env_ffmpeg.GLSL_HEADER("yuv_to_rgb.glsl")
+env_ffmpeg.Depends(Glob("*.glsl.gen.h"), ["#glsl_builders.py"])
+
+# env_ffmpeg.Append(CPPDEFINES=["FFMPEG_MT_GPU_UPLOAD"])
+if ARGUMENTS.get("ffmpeg_shared", "no") == "yes":
+    # Shared lib compilation
+    env_ffmpeg.Append(CCFLAGS=["-fPIC"])
+    env_ffmpeg["LIBS"] = FFMPEG_LIBS
+    shared_lib = env_ffmpeg.SharedLibrary(target="#bin/ffmpeg", source=sources)
+    shared_lib_shim = shared_lib[0].name.rsplit(".", 1)[0]
+    env.Append(LIBPATH=["#bin"])
+    env.Append(LIBS=[shared_lib_shim])
+else:
+    env_ffmpeg.add_source_files(module_obj, sources)
+    env.modules_sources += module_obj

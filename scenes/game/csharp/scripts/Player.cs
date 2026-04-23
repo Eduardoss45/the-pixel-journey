@@ -22,6 +22,7 @@ public partial class Player : CharacterBody2D
 	}
 
 	private AnimatedSprite2D _anim = null!;
+	private AudioStreamPlayer2D _jumpSfx = null!;
 	private CollisionShape2D _collisionShape = null!;
 	private CollisionShape2D _hitboxCollision = null!;
 	private RayCast2D _leftWallDetector = null!;
@@ -68,6 +69,7 @@ public partial class Player : CharacterBody2D
 	public override void _Ready()
 	{
 		_anim = GetNode<AnimatedSprite2D>("PixelAnimation");
+		_jumpSfx = GetNodeOrNull<AudioStreamPlayer2D>("JumpSfx");
 		_collisionShape = GetNode<CollisionShape2D>("CollisionShape2D");
 		_hitboxCollision = GetNode<CollisionShape2D>("Hitbox/CollisionShape2D");
 		_leftWallDetector = GetNode<RayCast2D>("LeftWallDetector");
@@ -158,13 +160,15 @@ public partial class Player : CharacterBody2D
 		_anim.Play("walk");
 	}
 
-	private void GoToJumpState()
+	private void GoToJumpState(bool playSfx = false)
 	{
 		_status = PlayerState.Jump;
 		_anim.Play("jump");
 		Velocity = new Vector2(Velocity.X, JumpVelocity);
 		_jumpCount += 1;
 		_forceAirRemaining = JumpGraceSeconds;
+		if (playSfx)
+			PlayJumpSfx();
 	}
 
 	private void GoToFallState()
@@ -246,7 +250,7 @@ public partial class Player : CharacterBody2D
 
 		if (Input.IsActionJustPressed("jump"))
 		{
-			GoToJumpState();
+			GoToJumpState(true);
 			return;
 		}
 
@@ -270,7 +274,7 @@ public partial class Player : CharacterBody2D
 
 		if (Input.IsActionJustPressed("jump"))
 		{
-			GoToJumpState();
+			GoToJumpState(true);
 			return;
 		}
 
@@ -300,7 +304,7 @@ public partial class Player : CharacterBody2D
 
 		if (Input.IsActionJustPressed("jump") && CanJump())
 		{
-			GoToJumpState();
+			GoToJumpState(true);
 			return;
 		}
 
@@ -322,7 +326,7 @@ public partial class Player : CharacterBody2D
 
 		if (Input.IsActionJustPressed("jump") && CanJump())
 		{
-			GoToJumpState();
+			GoToJumpState(true);
 			return;
 		}
 
@@ -408,7 +412,7 @@ public partial class Player : CharacterBody2D
 		if (Input.IsActionJustPressed("jump"))
 		{
 			Velocity = new Vector2(WallJumpVelocity * _direction, Velocity.Y);
-			GoToJumpState();
+			GoToJumpState(true);
 		}
 	}
 
@@ -426,7 +430,10 @@ public partial class Player : CharacterBody2D
 			Velocity = new Vector2(Velocity.X, WaterMaxSpeed);
 
 		if (Input.IsActionJustPressed("jump"))
+		{
 			Velocity = new Vector2(Velocity.X, WaterJumpForce);
+			PlayJumpSfx();
+		}
 	}
 
 	private void HurtState(float delta)
@@ -476,6 +483,15 @@ public partial class Player : CharacterBody2D
 	private bool CanJump()
 	{
 		return _jumpCount < MaxJumpCount;
+	}
+
+	private void PlayJumpSfx()
+	{
+		if (_jumpSfx == null)
+			return;
+
+		_jumpSfx.Stop();
+		_jumpSfx.Play();
 	}
 
 	private void SetSmallCollider()

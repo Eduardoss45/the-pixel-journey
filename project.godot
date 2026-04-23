@@ -22,6 +22,7 @@ ObjectManager="*res://manager/ObjectManager.cs"
 Dialogic="*res://addons/dialogic/Core/DialogicGameHandler.gd"
 QuizManager="*res://manager/QuizManager.cs"
 GameSession="*res://manager/GameSession.cs"
+SfxBus="*res://manager/SfxBus.cs"
 
 [dialogic]
 
@@ -89,6 +90,10 @@ project/assembly_name="A Jornada de Pixel"
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/dialogic/plugin.cfg")
+
+[gdextension]
+
+extensions=PackedStringArray("res://addons/ffmpeg/ffmpeg.gdextension")
 
 [global_group]
 

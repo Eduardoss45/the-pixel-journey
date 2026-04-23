@@ -1,0 +1,14 @@
+[remap]
+
+importer="glsl"
+type="RDShaderFile"
+uid="uid://cjpy3604hmyd5"
+path="res://.godot/imported/yuv_to_rgb.glsl-bab4bfc17a0000aef81660884fc0dc90.res"
+
+[deps]
+
+source_file="res://addons/ffmpeg/yuv_to_rgb.glsl"
+dest_files=["res://.godot/imported/yuv_to_rgb.glsl-bab4bfc17a0000aef81660884fc0dc90.res"]
+
+[params]
+

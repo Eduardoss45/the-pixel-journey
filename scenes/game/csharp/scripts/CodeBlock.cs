@@ -105,6 +105,7 @@ public partial class CodeBlock : AnimatableBody2D
 
 		codeEditorContainer.Visible = true;
 		codeEditorContainer.ProcessMode = ProcessModeEnum.Always;
+		SfxBus.Instance?.PlayOpen();
 
 		var tree = GetTree();
 		if (tree != null)
@@ -135,6 +136,8 @@ public partial class CodeBlock : AnimatableBody2D
 	public void CloseCodeEditor()
 	{
 		if (codeEditorContainer == null) return;
+		if (codeEditorContainer.Visible)
+			SfxBus.Instance?.PlayClose();
 
 		codeEditorContainer.Visible = false;
 		codeEditorContainer.ProcessMode = ProcessModeEnum.Disabled;

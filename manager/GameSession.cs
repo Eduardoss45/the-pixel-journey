@@ -12,6 +12,8 @@ public partial class GameSession : Node
     [Signal] public delegate void LivesChangedEventHandler(int lives);
     [Signal] public delegate void StateChangedEventHandler(int state);
     [Signal] public delegate void RuntimeResetEventHandler();
+    [Signal] public delegate void BossActiveChangedEventHandler(bool active);
+    [Signal] public delegate void BossDefeatedSignalEventHandler();
 
     public const int InitialLives = 5;
     public const string GameOverScenePath = "res://scenes/game/csharp/entities/game_over.tscn";
@@ -37,7 +39,11 @@ public partial class GameSession : Node
         EmitSignal(SignalName.LivesChanged, Lives);
         ResetRespawnPosition();
         BossDefeated = false;
-        BossActive = false;
+        if (BossActive)
+        {
+            BossActive = false;
+            EmitSignal(SignalName.BossActiveChanged, BossActive);
+        }
     }
 
     public void EnterPlayingState()
@@ -111,13 +117,26 @@ public partial class GameSession : Node
 
     public void MarkBossDefeated()
     {
+        if (BossDefeated)
+            return;
+
         BossDefeated = true;
-        BossActive = false;
+        if (BossActive)
+        {
+            BossActive = false;
+            EmitSignal(SignalName.BossActiveChanged, BossActive);
+        }
+        EmitSignal(SignalName.BossDefeatedSignal);
     }
 
     public void SetBossActive(bool value)
     {
+        if (BossActive == value)
+            return;
+
         BossActive = value;
+        EmitSignal(SignalName.BossActiveChanged, BossActive);
+
         if (!value && !BossDefeated)
         {
             // keep defeated state if already set

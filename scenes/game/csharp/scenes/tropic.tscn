@@ -1,4 +1,4 @@
-[gd_scene load_steps=45 format=4 uid="uid://bgfcjcumo7ro"]
+[gd_scene load_steps=46 format=4 uid="uid://bgfcjcumo7ro"]
 
 [ext_resource type="PackedScene" uid="uid://cgor0dilaoak3" path="res://scenes/game/csharp/entities/player.tscn" id="1_vpdwy"]
 [ext_resource type="TileSet" uid="uid://ci6yocecub5y3" path="res://assets/tilesets/terrain.tres" id="2_a52c3"]
@@ -27,12 +27,13 @@
 [ext_resource type="PackedScene" uid="uid://bcyyiatttmdtu" path="res://scenes/game/csharp/entities/unstable_platform.tscn" id="21_q8xkr"]
 [ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="22_7n8yu"]
 [ext_resource type="PackedScene" path="res://scenes/game/csharp/entities/respawn_anchor.tscn" id="23_gq3tw"]
-[ext_resource type="AudioStream" uid="uid://d1lpukv5e8xwb" path="res://assets/music/trilha-sonora.ogg" id="23_q5nrf"]
 [ext_resource type="PackedScene" uid="uid://bes2p46skt65p" path="res://scenes/game/csharp/entities/skeleton.tscn" id="25_a6yk7"]
 [ext_resource type="PackedScene" uid="uid://cbfcwhf3y3gep" path="res://scenes/game/csharp/entities/life.tscn" id="26_ycrct"]
 [ext_resource type="PackedScene" uid="uid://c2cw1mpld8cdw" path="res://scenes/game/csharp/entities/detection.tscn" id="28_aj478"]
 [ext_resource type="PackedScene" uid="uid://jyqtr8ygan33" path="res://scenes/game/csharp/entities/boss.tscn" id="28_ndntf"]
 [ext_resource type="PackedScene" uid="uid://b0rudl8anctl6" path="res://scenes/game/csharp/entities/byte.tscn" id="32_ws0u1"]
+[ext_resource type="Script" uid="uid://c0d3xrixahc6f" path="res://scenes/game/csharp/scripts/TropicFlow.cs" id="33_tropic_flow"]
+[ext_resource type="AudioStream" uid="uid://dc0i52dtpmjxi" path="res://assets/music/music-game.ogg" id="34_uhuw6"]
 
 [sub_resource type="TileMapPattern" id="TileMapPattern_ngdc5"]
 tile_data = PackedInt32Array(0, 3, 0)
@@ -200,9 +201,10 @@ animations = [{
 }]
 
 [node name="Tropic" type="Node2D"]
+script = ExtResource("33_tropic_flow")
 
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
-position = Vector2(3208, 120)
+position = Vector2(16, 168)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10
@@ -505,7 +507,6 @@ position = Vector2(3208, -64)
 
 [node name="Byte" parent="Objects" instance=ExtResource("32_ws0u1")]
 position = Vector2(48, 160)
-AutoStartDialogue = false
 
 [node name="DetectionZone" parent="Objects" instance=ExtResource("28_aj478")]
 position = Vector2(3240, 80)
@@ -561,6 +562,6 @@ theme_override_font_sizes/font_size = 11
 text = "5"
 
 [node name="AudioStreamPlayer2D" type="AudioStreamPlayer2D" parent="."]
-stream = ExtResource("23_q5nrf")
+stream = ExtResource("34_uhuw6")
 autoplay = true
 parameters/looping = true

@@ -1,4 +1,4 @@
-[gd_scene load_steps=47 format=3 uid="uid://cgor0dilaoak3"]
+[gd_scene load_steps=48 format=3 uid="uid://cgor0dilaoak3"]
 
 [ext_resource type="Script" uid="uid://crf1isaupq8cq" path="res://scenes/game/csharp/scripts/Player.cs" id="1_n2u3w"]
 [ext_resource type="Texture2D" uid="uid://4b2bq6maj8f5" path="res://scenes/game/csharp/sprites/penguin/Ducking (16 x 16).png" id="2_4kd6g"]
@@ -15,6 +15,7 @@
 [ext_resource type="Texture2D" uid="uid://lihgflpx86sr" path="res://scenes/game/csharp/sprites/penguin/Wall_Slide (16x16).png" id="11_ereh2"]
 [ext_resource type="Texture2D" uid="uid://byfyiycssnmmf" path="res://scenes/game/csharp/sprites/penguin/Lying_On_Ground (16 x 16).png" id="11_jt5be"]
 [ext_resource type="Texture2D" uid="uid://chcrrpshmxyib" path="res://scenes/game/csharp/sprites/penguin/Sitting (16 x 16).png" id="12_yipcu"]
+[ext_resource type="AudioStream" path="res://assets/effects/jump.ogg" id="13_jump_sfx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_e8xqm"]
 radius = 6.0
@@ -329,6 +330,10 @@ target_position = Vector2(-7, 0)
 visible = false
 z_index = 10
 target_position = Vector2(7, 0)
+
+[node name="JumpSfx" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("13_jump_sfx")
+volume_db = -4.0
 
 [connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]
 [connection signal="body_entered" from="Hitbox" to="." method="_on_hitbox_body_entered"]
