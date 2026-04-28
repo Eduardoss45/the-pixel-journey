@@ -109,6 +109,8 @@ public partial class Hud : CanvasLayer
 			deathFlowRunning = false;
 			return;
 		}
+		if (gameSession.State == GameSession.GameState.GameOver)
+			SfxBus.Instance?.PlayGameOver();
 
 		var deathCause = player?.LastDeathCause ?? Player.DeathCause.Damage;
 

@@ -8,6 +8,8 @@ public partial class SfxBus : Node
     private const string LoosePath = "res://assets/effects/loose.ogg";
     private const string CollectPath = "res://assets/effects/collect.ogg";
     private const string EliminationPath = "res://assets/effects/elimination.ogg";
+    private const string FirePath = "res://assets/effects/fire.ogg";
+    private const string GameOverPath = "res://assets/effects/game_over.ogg";
     private const string OpenPath = "res://assets/effects/open.ogg";
     private const string ClosePath = "res://assets/effects/close.ogg";
 
@@ -28,6 +30,8 @@ public partial class SfxBus : Node
     public void PlayLoose() => PlayFromPath(LoosePath);
     public void PlayCollect() => PlayFromPath(CollectPath);
     public void PlayElimination() => PlayFromPath(EliminationPath);
+    public void PlayFire() => PlayFromPath(FirePath);
+    public void PlayGameOver() => PlayFromPath(GameOverPath);
     public void PlayOpen() => PlayFromPath(OpenPath);
     public void PlayClose() => PlayFromPath(ClosePath);
 

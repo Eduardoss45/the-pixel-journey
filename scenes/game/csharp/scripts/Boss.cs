@@ -629,6 +629,7 @@ public partial class Boss : CharacterBody2D
 
     private void ThrowFireball()
     {
+        SfxBus.Instance?.PlayFire();
         SpawnFireball(0.0f);
         SpawnFireball(15.0f);
         SpawnFireball(30.0f);

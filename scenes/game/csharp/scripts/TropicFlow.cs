@@ -26,10 +26,17 @@ public partial class TropicFlow : Node2D
     private CanvasLayer _fadeLayer;
     private ColorRect _fadeRect;
     private int _musicTransitionToken;
+    private AudioStream _desiredMusic;
 
     public override void _Ready()
     {
+        ProcessMode = ProcessModeEnum.Always;
         _musicPlayer = GetNodeOrNull<AudioStreamPlayer2D>(MusicPlayerPath);
+        if (_musicPlayer != null)
+        {
+            _musicPlayer.ProcessMode = ProcessModeEnum.Always;
+            _musicPlayer.Finished += OnMusicFinished;
+        }
         _gameMusic = LoadMusicOrNull(GameMusicPath);
         _bossMusic = LoadMusicOrNull(BossMusicPath);
         ForceLoopEnabled(_gameMusic);
@@ -57,6 +64,38 @@ public partial class TropicFlow : Node2D
 
         session.BossActiveChanged -= OnBossActiveChanged;
         session.BossDefeatedSignal -= OnBossDefeated;
+
+        if (_musicPlayer != null)
+            _musicPlayer.Finished -= OnMusicFinished;
+    }
+
+    public override void _Process(double delta)
+    {
+        if (_endingStarted || _musicPlayer == null || _desiredMusic == null)
+            return;
+
+        if (_musicPlayer.Stream != _desiredMusic)
+            return;
+
+        // Defensive watchdog: if playback ended without looping or "Playing" got stuck,
+        // restart the desired track to avoid permanent silence.
+        if (!_musicPlayer.Playing || ShouldRestartCurrentTrack(_desiredMusic))
+        {
+            _musicPlayer.VolumeDb = NormalVolumeDb;
+            _musicPlayer.Play();
+        }
+    }
+
+    private void OnMusicFinished()
+    {
+        if (_endingStarted || _musicPlayer == null || _desiredMusic == null)
+            return;
+
+        if (_musicPlayer.Stream != _desiredMusic)
+            return;
+
+        _musicPlayer.VolumeDb = NormalVolumeDb;
+        _musicPlayer.Play();
     }
 
     private void OnBossActiveChanged(bool active)
@@ -89,8 +128,17 @@ public partial class TropicFlow : Node2D
         if (target == null)
             return;
 
-        if (_musicPlayer.Stream == target && _musicPlayer.Playing)
+        _desiredMusic = target;
+
+        if (_musicPlayer.Stream == target)
+        {
+            if (!_musicPlayer.Playing || ShouldRestartCurrentTrack(target))
+            {
+                _musicPlayer.VolumeDb = NormalVolumeDb;
+                _musicPlayer.Play();
+            }
             return;
+        }
 
         int token = ++_musicTransitionToken;
         var tree = GetTree();
@@ -225,6 +273,19 @@ public partial class TropicFlow : Node2D
         var tween = CreateTween();
         tween.TweenProperty(_musicPlayer, "volume_db", targetDb, seconds);
         await ToSignal(tween, Tween.SignalName.Finished);
+    }
+
+    private bool ShouldRestartCurrentTrack(AudioStream expected)
+    {
+        if (_musicPlayer == null || expected == null)
+            return false;
+
+        double length = expected.GetLength();
+        if (length <= 0.0)
+            return false;
+
+        double pos = _musicPlayer.GetPlaybackPosition();
+        return pos >= Math.Max(0.0, length - 0.05);
     }
 
     private static AudioStream LoadMusicOrNull(string path)

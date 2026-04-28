@@ -32,7 +32,6 @@ directories/dch_directory={
 "pixel": "res://chars/pixel.dch"
 }
 directories/dtl_directory={
-"boss_fight": "res://timelines/boss_fight.dtl",
 "byte_intro": "res://timelines/byte_intro.dtl"
 }
 layout/style_directory={
