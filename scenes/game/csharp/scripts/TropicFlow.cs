@@ -79,6 +79,9 @@ public partial class TropicFlow : Node2D
 
         // Defensive watchdog: if playback ended without looping or "Playing" got stuck,
         // restart the desired track to avoid permanent silence.
+        if (_musicPlayer.VolumeDb < NormalVolumeDb - 1.0f)
+            _musicPlayer.VolumeDb = NormalVolumeDb;
+
         if (!_musicPlayer.Playing || ShouldRestartCurrentTrack(_desiredMusic))
         {
             _musicPlayer.VolumeDb = NormalVolumeDb;
@@ -132,6 +135,9 @@ public partial class TropicFlow : Node2D
 
         if (_musicPlayer.Stream == target)
         {
+            if (_musicPlayer.VolumeDb < NormalVolumeDb - 1.0f)
+                _musicPlayer.VolumeDb = NormalVolumeDb;
+
             if (!_musicPlayer.Playing || ShouldRestartCurrentTrack(target))
             {
                 _musicPlayer.VolumeDb = NormalVolumeDb;
@@ -146,7 +152,12 @@ public partial class TropicFlow : Node2D
         {
             await TweenVolumeAsync(SilentVolumeDb, MusicFadeSeconds);
             if (token != _musicTransitionToken || tree == null)
+            {
+                // Another transition started while we were fading out. Never leave the
+                // current track muted, otherwise we can get "permanent silence".
+                _musicPlayer.VolumeDb = NormalVolumeDb;
                 return;
+            }
         }
 
         _musicPlayer.Stream = target;

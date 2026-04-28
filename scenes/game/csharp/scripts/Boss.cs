@@ -1078,7 +1078,9 @@ public partial class Boss : CharacterBody2D
             questions,
             wasCorrect =>
             {
-                CloseQuiz(wasCorrect);
+                // If the player got it wrong, avoid immediately reopening the quiz due to
+                // hitbox/body_entered retrigger when we re-enable processing/collisions.
+                CloseQuiz(applyImmunity: wasCorrect, blockReopenSeconds: wasCorrect ? 0.0f : 0.6f);
                 if (wasCorrect)
                 {
                     _lives = Mathf.Max(0, _lives - 1);
@@ -1094,7 +1096,7 @@ public partial class Boss : CharacterBody2D
         _playerThatHit?.SetCanMove(false);
     }
 
-    private void CloseQuiz(bool applyImmunity)
+    private void CloseQuiz(bool applyImmunity, float blockReopenSeconds = 0.0f)
     {
         if (_quizContainer == null)
             return;
@@ -1125,7 +1127,10 @@ public partial class Boss : CharacterBody2D
         }
         else
         {
-            _postQuizImmunityRemaining = 0.0f;
+            if (blockReopenSeconds > 0.0f)
+                _postQuizImmunityRemaining = Mathf.Max(_postQuizImmunityRemaining, blockReopenSeconds);
+            else
+                _postQuizImmunityRemaining = 0.0f;
             RestoreAttackCollisionException();
             ResetAbilityCooldowns();
             GoToChaseState();

@@ -204,7 +204,7 @@ animations = [{
 script = ExtResource("33_tropic_flow")
 
 [node name="Player" parent="." instance=ExtResource("1_vpdwy")]
-position = Vector2(8, 168)
+position = Vector2(3208, -40)
 
 [node name="UILayer" type="CanvasLayer" parent="."]
 layer = 10
