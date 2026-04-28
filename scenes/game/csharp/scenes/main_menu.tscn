@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://deshic5wummff"]
 
 [ext_resource type="Script" uid="uid://47wychp54bpp" path="res://scenes/game/csharp/scripts/MainMenu.cs" id="1_ai42b"]
-[ext_resource type="Texture2D" uid="uid://dhcc15a0q3mq1" path="res://assets/background/background.png" id="2_fuupd"]
+[ext_resource type="Texture2D" uid="uid://jnelaa1dvkyq" path="res://assets/background/bg.png" id="2_8ppe2"]
 [ext_resource type="FontFile" uid="uid://dkw1oqtig7nr" path="res://scenes/game/csharp/fonts/JetBrainsMono-Regular.ttf" id="3_8ppe2"]
 [ext_resource type="StyleBox" uid="uid://duisq6j2lao8b" path="res://styles/button.tres" id="4_e7lel"]
 [ext_resource type="AudioStream" uid="uid://d1lpukv5e8xwb" path="res://assets/music/trilha-sonora.ogg" id="5_8ppe2"]
@@ -20,8 +20,8 @@ script = ExtResource("1_ai42b")
 [node name="Background" type="TextureRect" parent="."]
 layout_mode = 1
 offset_right = 400.0
-offset_bottom = 209.0
-texture = ExtResource("2_fuupd")
+offset_bottom = 208.0
+texture = ExtResource("2_8ppe2")
 expand_mode = 1
 stretch_mode = 4
 
@@ -100,9 +100,9 @@ anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 offset_left = -224.0
-offset_top = -136.0
+offset_top = -139.0
 offset_right = 230.0
-offset_bottom = 136.0
+offset_bottom = 133.0
 grow_horizontal = 2
 grow_vertical = 2
 paused = true
