@@ -7,10 +7,8 @@ public partial class TropicFlow : Node2D
     private const string DefaultBossMusicPath = "res://assets/music/music-boss.ogg";
     private const string DefaultCreditsCutscenePath = "res://assets/cutscenes/credits.mp4";
     private const string DefaultMainMenuScenePath = "res://scenes/game/csharp/scenes/main_menu.tscn";
-    private const float MusicFadeSeconds = 0.7f;
     private const float EndDelaySeconds = 5.0f;
     private const float PreCreditsFadeSeconds = 1.0f;
-    private const float SilentVolumeDb = -40.0f;
     private const float NormalVolumeDb = 0.0f;
 
     [Export] public NodePath MusicPlayerPath { get; set; } = "AudioStreamPlayer2D";
@@ -25,7 +23,6 @@ public partial class TropicFlow : Node2D
     private bool _endingStarted;
     private CanvasLayer _fadeLayer;
     private ColorRect _fadeRect;
-    private int _musicTransitionToken;
     private AudioStream _desiredMusic;
 
     public override void _Ready()
@@ -36,6 +33,10 @@ public partial class TropicFlow : Node2D
         {
             _musicPlayer.ProcessMode = ProcessModeEnum.Always;
             _musicPlayer.Finished += OnMusicFinished;
+            // BGM should be global and not attenuate with world distance.
+            _musicPlayer.Attenuation = 0.0f;
+            _musicPlayer.MaxDistance = 1000000.0f;
+            _musicPlayer.PanningStrength = 0.0f;
         }
         _gameMusic = LoadMusicOrNull(GameMusicPath);
         _bossMusic = LoadMusicOrNull(BossMusicPath);
@@ -75,7 +76,12 @@ public partial class TropicFlow : Node2D
             return;
 
         if (_musicPlayer.Stream != _desiredMusic)
+        {
+            _musicPlayer.Stream = _desiredMusic;
+            _musicPlayer.VolumeDb = NormalVolumeDb;
+            _musicPlayer.Play();
             return;
+        }
 
         // Defensive watchdog: if playback ended without looping or "Playing" got stuck,
         // restart the desired track to avoid permanent silence.
@@ -146,24 +152,11 @@ public partial class TropicFlow : Node2D
             return;
         }
 
-        int token = ++_musicTransitionToken;
-        var tree = GetTree();
-        if (_musicPlayer.Playing && _musicPlayer.Stream != null)
-        {
-            await TweenVolumeAsync(SilentVolumeDb, MusicFadeSeconds);
-            if (token != _musicTransitionToken || tree == null)
-            {
-                // Another transition started while we were fading out. Never leave the
-                // current track muted, otherwise we can get "permanent silence".
-                _musicPlayer.VolumeDb = NormalVolumeDb;
-                return;
-            }
-        }
-
+        _musicPlayer.Stop();
         _musicPlayer.Stream = target;
-        _musicPlayer.VolumeDb = SilentVolumeDb;
+        _musicPlayer.VolumeDb = NormalVolumeDb;
         _musicPlayer.Play();
-        await TweenVolumeAsync(NormalVolumeDb, MusicFadeSeconds);
+        await System.Threading.Tasks.Task.CompletedTask;
     }
 
     private async System.Threading.Tasks.Task PlayCreditsAndReturnToMenu()
@@ -267,23 +260,14 @@ public partial class TropicFlow : Node2D
         await ToSignal(tween, Tween.SignalName.Finished);
     }
 
-    private async System.Threading.Tasks.Task FadeMusicOutAsync()
+    private System.Threading.Tasks.Task FadeMusicOutAsync()
     {
         if (_musicPlayer == null)
-            return;
+            return System.Threading.Tasks.Task.CompletedTask;
 
-        await TweenVolumeAsync(SilentVolumeDb, MusicFadeSeconds);
+        _musicPlayer.VolumeDb = NormalVolumeDb;
         _musicPlayer.Stop();
-    }
-
-    private async System.Threading.Tasks.Task TweenVolumeAsync(float targetDb, float seconds)
-    {
-        if (_musicPlayer == null)
-            return;
-
-        var tween = CreateTween();
-        tween.TweenProperty(_musicPlayer, "volume_db", targetDb, seconds);
-        await ToSignal(tween, Tween.SignalName.Finished);
+        return System.Threading.Tasks.Task.CompletedTask;
     }
 
     private bool ShouldRestartCurrentTrack(AudioStream expected)
