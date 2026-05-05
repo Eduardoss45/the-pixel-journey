@@ -7,12 +7,26 @@ public partial class MainMenu : Control
     private const string DefaultWelcomeCutscenePath = "res://assets/cutscenes/welcome.mp4";
     private const string DefaultCreditsCutscenePath = "res://assets/cutscenes/credits.mp4";
 
-    [Export] private TextureRect Background;
-    [Export] private Button BtnIniciar;
-    [Export] private Button BtnCreditos;
-    [Export] private Button BtnSair;
-    [Export] private AudioStreamPlayer2D MenuMusic;
-    [Export] private VideoStreamPlayer Cutscene;
+    [Export]
+    private TextureRect Background;
+
+    [Export]
+    private Button BtnIniciar;
+
+    [Export]
+    private Button BtnCreditos;
+
+    [Export]
+    private Button BtnSair;
+
+    [Export]
+    private AudioStreamPlayer2D MenuMusic;
+
+    [Export]
+    private VideoStreamPlayer Cutscene;
+
+    [Export]
+    private Label LblSkip;
 
     [Export(PropertyHint.File, "*.mp4")]
     public string WelcomeCutscenePath { get; set; } = DefaultWelcomeCutscenePath;
@@ -22,6 +36,10 @@ public partial class MainMenu : Control
 
     private VideoStream _welcomeCutsceneStream;
     private VideoStream _creditsCutsceneStream;
+
+    private bool _isPlayingCutscene = false;
+    private bool _canSkip = false;
+    private TaskCompletionSource _cutsceneTcs;
 
     public override void _Ready()
     {
@@ -55,6 +73,23 @@ public partial class MainMenu : Control
         if (BtnCreditos != null)
             BtnCreditos.Pressed += OnBtnCreditosPressed;
         BtnSair.Pressed += OnBtnSairPressed;
+
+        LblSkip ??= GetNodeOrNull<Label>("LblSkip");
+
+        if (LblSkip != null)
+        {
+            LblSkip.Visible = false;
+            LblSkip.ZIndex = 200;
+            LblSkip.TopLevel = true;
+        }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (_isPlayingCutscene && _canSkip && @event.IsActionPressed("ui_cancel"))
+        {
+            SkipCutscene();
+        }
     }
 
     private async void OnBtnIniciarPressed()
@@ -80,10 +115,53 @@ public partial class MainMenu : Control
             MenuMusic.Play();
     }
 
+    private void OnCutsceneFinished()
+    {
+        _cutsceneTcs?.TrySetResult();
+    }
+
+    private void SkipCutscene()
+    {
+        if (!_isPlayingCutscene || !_canSkip)
+            return;
+
+        _cutsceneTcs?.TrySetResult();
+    }
+
+    private async Task EnableSkipAfterDelay()
+    {
+        await ToSignal(GetTree().CreateTimer(1.0), "timeout");
+
+        _canSkip = true;
+
+        if (LblSkip != null)
+            LblSkip.Visible = true;
+    }
+
+    private void CleanupCutscene()
+    {
+        _isPlayingCutscene = false;
+        _canSkip = false;
+
+        if (Cutscene != null)
+        {
+            Cutscene.Stop();
+            Cutscene.Visible = false;
+            Cutscene.Finished -= OnCutsceneFinished;
+        }
+
+        if (LblSkip != null)
+            LblSkip.Visible = false;
+    }
+
     private async Task PlayCutscene(VideoStream stream)
     {
         if (Cutscene == null || stream == null)
             return;
+
+        _isPlayingCutscene = true;
+        _canSkip = false;
+        _cutsceneTcs = new TaskCompletionSource();
 
         Cutscene.Visible = true;
         Cutscene.Paused = false;
@@ -91,10 +169,16 @@ public partial class MainMenu : Control
         Cutscene.StreamPosition = 0.0;
         Cutscene.Play();
 
-        await ToSignal(Cutscene, VideoStreamPlayer.SignalName.Finished);
+        if (LblSkip != null)
+            LblSkip.Visible = false;
 
-        Cutscene.Stop();
-        Cutscene.Visible = false;
+        _ = EnableSkipAfterDelay();
+
+        Cutscene.Finished += OnCutsceneFinished;
+
+        await _cutsceneTcs.Task;
+
+        CleanupCutscene();
     }
 
     private void OnBtnSairPressed()
@@ -123,19 +207,25 @@ public partial class MainMenu : Control
             return null;
         }
 
-        if (path.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase) && ClassDB.ClassExists("FFmpegVideoStream"))
+        if (
+            path.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)
+            && ClassDB.ClassExists("FFmpegVideoStream")
+        )
         {
             var ffmpegVariant = ClassDB.Instantiate("FFmpegVideoStream");
-            var ffmpegObject = ffmpegVariant.VariantType == Variant.Type.Object
-                ? ffmpegVariant.AsGodotObject()
-                : null;
+            var ffmpegObject =
+                ffmpegVariant.VariantType == Variant.Type.Object
+                    ? ffmpegVariant.AsGodotObject()
+                    : null;
             if (ffmpegObject is VideoStream ffmpegStream)
             {
                 ffmpegStream.Set("file", path);
                 return ffmpegStream;
             }
 
-            GD.PushWarning("[Cutscene] FFmpegVideoStream class exists but could not be instantiated as VideoStream.");
+            GD.PushWarning(
+                "[Cutscene] FFmpegVideoStream class exists but could not be instantiated as VideoStream."
+            );
         }
 
         try
