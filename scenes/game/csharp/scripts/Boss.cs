@@ -322,7 +322,10 @@ public partial class Boss : CharacterBody2D
 
         if (_wallPunishCooldownRemaining > 0.0f)
         {
-            _wallPunishCooldownRemaining = Mathf.Max(0.0f, _wallPunishCooldownRemaining - (float)delta);
+            _wallPunishCooldownRemaining = Mathf.Max(
+                0.0f,
+                _wallPunishCooldownRemaining - (float)delta
+            );
         }
 
         if (_fireballCooldownRemaining > 0.0f)
@@ -695,7 +698,11 @@ public partial class Boss : CharacterBody2D
         _attackTargetPlayer = player as Player;
         _attackExceptionApplied = false;
 
-        _attackDesiredVx = ComputeDesiredVx(_attackTargetX, AttackJumpVelocity, AttackJumpHorizontalSpeed);
+        _attackDesiredVx = ComputeDesiredVx(
+            _attackTargetX,
+            AttackJumpVelocity,
+            AttackJumpHorizontalSpeed
+        );
 
         float direction = _attackDesiredVx >= 0.0f ? 1.0f : -1.0f;
         if (direction != _direction)
@@ -994,7 +1001,10 @@ public partial class Boss : CharacterBody2D
         _stompSeparationActive = true;
         AddCollisionExceptionWith(player);
 
-        await ToSignal(GetTree().CreateTimer(StompSeparationSeconds), SceneTreeTimer.SignalName.Timeout);
+        await ToSignal(
+            GetTree().CreateTimer(StompSeparationSeconds),
+            SceneTreeTimer.SignalName.Timeout
+        );
 
         if (_stompSeparatedPlayer == player)
         {
@@ -1128,7 +1138,10 @@ public partial class Boss : CharacterBody2D
         else
         {
             if (blockReopenSeconds > 0.0f)
-                _postQuizImmunityRemaining = Mathf.Max(_postQuizImmunityRemaining, blockReopenSeconds);
+                _postQuizImmunityRemaining = Mathf.Max(
+                    _postQuizImmunityRemaining,
+                    blockReopenSeconds
+                );
             else
                 _postQuizImmunityRemaining = 0.0f;
             RestoreAttackCollisionException();
@@ -1237,7 +1250,10 @@ public partial class Boss : CharacterBody2D
     private void SetCollisionEnabled(bool enabled)
     {
         if (_hitbox != null)
-            _hitbox.SetDeferred(Node.PropertyName.ProcessMode, enabled ? (int)ProcessModeEnum.Inherit : (int)ProcessModeEnum.Disabled);
+            _hitbox.SetDeferred(
+                Node.PropertyName.ProcessMode,
+                enabled ? (int)ProcessModeEnum.Inherit : (int)ProcessModeEnum.Disabled
+            );
         if (_bodyCollision != null)
             _bodyCollision.SetDeferred("disabled", !enabled);
     }

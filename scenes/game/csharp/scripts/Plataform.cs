@@ -1,195 +1,200 @@
-using Godot;
 using System;
+using Godot;
 
 public partial class Plataform : AnimatableBody2D, IGameMechanism
 {
-	[Export] public string MechanismId { get; set; } = "";
-	[Export] public float MoveSpeed = 80.0f;
-	[Export] public int MovementPatternIndex = 0;
-	[Export] public float Distance = 75f;
-	[Export] public bool StartActive = false;
-	[Export] public bool StartWithPhysics = false;
+    [Export]
+    public string MechanismId { get; set; } = "";
 
-	private bool isMoving = false;
-	private bool goingToTarget = true;
-	private bool isOneWay = false; 
+    [Export]
+    public float MoveSpeed = 80.0f;
 
-	private Vector2 startPosition;
-	private Vector2 targetPosition;
-	private Vector2 currentOffset;
-	private CollisionShape2D collisionShape;
+    [Export]
+    public int MovementPatternIndex = 0;
 
+    [Export]
+    public float Distance = 75f;
 
-	public override void _Ready()
-	{
-		startPosition = Position;
-		SyncToPhysics = true;
+    [Export]
+    public bool StartActive = false;
 
-		collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
+    [Export]
+    public bool StartWithPhysics = false;
 
-		MechanismId = MechanismId.Trim();
+    private bool isMoving = false;
+    private bool goingToTarget = true;
+    private bool isOneWay = false;
 
-		ObjectManager.Instance?.Register(this);
+    private Vector2 startPosition;
+    private Vector2 targetPosition;
+    private Vector2 currentOffset;
+    private CollisionShape2D collisionShape;
 
-		if (MovementPatternIndex == 1)
-			SetVerticalLoop();
-		else if (MovementPatternIndex == 2)
-			SetHorizontalLoop();
-		else if (MovementPatternIndex == 3)
-			SetOneWayUp();
-		else if (MovementPatternIndex == 4)
-			SetOneWayDown();
+    public override void _Ready()
+    {
+        startPosition = Position;
+        SyncToPhysics = true;
 
-		isMoving = StartActive;
-		SetPhysicsEnabled(StartWithPhysics || StartActive);
-	}
+        collisionShape = GetNodeOrNull<CollisionShape2D>("CollisionShape2D");
 
+        MechanismId = MechanismId.Trim();
 
-	public override void _PhysicsProcess(double delta)
-	{
-		if (!isMoving)
-			return;
+        ObjectManager.Instance?.Register(this);
 
-		Vector2 currentTarget = goingToTarget ? targetPosition : startPosition;
-		Vector2 toTarget = currentTarget - Position;
+        if (MovementPatternIndex == 1)
+            SetVerticalLoop();
+        else if (MovementPatternIndex == 2)
+            SetHorizontalLoop();
+        else if (MovementPatternIndex == 3)
+            SetOneWayUp();
+        else if (MovementPatternIndex == 4)
+            SetOneWayDown();
 
-		if (toTarget.Length() < 1.0f)
-		{
-			Position = currentTarget;
-			
-			if (isOneWay)
-			{
-				
-				isMoving = false;
-			}
-			else
-			{
-				
-				goingToTarget = !goingToTarget;
-			}
-			return;
-		}
+        isMoving = StartActive;
+        SetPhysicsEnabled(StartWithPhysics || StartActive);
+    }
 
-		float step = MoveSpeed * (float)delta;
-		Position = Position.MoveToward(currentTarget, step);
+    public override void _PhysicsProcess(double delta)
+    {
+        if (!isMoving)
+            return;
 
-		if (Position.DistanceTo(currentTarget) < 0.5f)
-		{
-			Position = currentTarget;
+        Vector2 currentTarget = goingToTarget ? targetPosition : startPosition;
+        Vector2 toTarget = currentTarget - Position;
 
-			if (isOneWay)
-			{
-				isMoving = false;
-			}
-			else
-			{
-				goingToTarget = !goingToTarget;
-			}
-		}
-	}
+        if (toTarget.Length() < 1.0f)
+        {
+            Position = currentTarget;
 
-	private void SetVerticalLoop()
-	{
-		currentOffset = new Vector2(0, -Distance);
-		targetPosition = startPosition + currentOffset;
-		isOneWay = false;
-	}
+            if (isOneWay)
+            {
+                isMoving = false;
+            }
+            else
+            {
+                goingToTarget = !goingToTarget;
+            }
+            return;
+        }
 
-	private void SetHorizontalLoop()
-	{
-		currentOffset = new Vector2(Distance, 0);
-		targetPosition = startPosition + currentOffset;
-		isOneWay = false;
-	}
+        float step = MoveSpeed * (float)delta;
+        Position = Position.MoveToward(currentTarget, step);
 
-	
-	private void SetOneWayUp()
-	{
-		currentOffset = new Vector2(0, -Distance);
-		targetPosition = startPosition + currentOffset;
-		isOneWay = true;
-		goingToTarget = true; 
-	}
+        if (Position.DistanceTo(currentTarget) < 0.5f)
+        {
+            Position = currentTarget;
 
-	
-	private void SetOneWayDown()
-	{
-		currentOffset = new Vector2(0, Distance);
-		targetPosition = startPosition + currentOffset;
-		isOneWay = true;
-		goingToTarget = true; 
-	}
+            if (isOneWay)
+            {
+                isMoving = false;
+            }
+            else
+            {
+                goingToTarget = !goingToTarget;
+            }
+        }
+    }
 
+    private void SetVerticalLoop()
+    {
+        currentOffset = new Vector2(0, -Distance);
+        targetPosition = startPosition + currentOffset;
+        isOneWay = false;
+    }
 
+    private void SetHorizontalLoop()
+    {
+        currentOffset = new Vector2(Distance, 0);
+        targetPosition = startPosition + currentOffset;
+        isOneWay = false;
+    }
 
-	public void SetMovementPattern(int index)
-	{
-		if (index < 1 || index > 4)
-		{
-			GD.PushError("Padrão inválido. Use 1 (vertical loop), 2 (horizontal loop), 3 (one-way up) ou 4 (one-way down).");
-			return;
-		}
+    private void SetOneWayUp()
+    {
+        currentOffset = new Vector2(0, -Distance);
+        targetPosition = startPosition + currentOffset;
+        isOneWay = true;
+        goingToTarget = true;
+    }
 
-		MovementPatternIndex = index;
+    private void SetOneWayDown()
+    {
+        currentOffset = new Vector2(0, Distance);
+        targetPosition = startPosition + currentOffset;
+        isOneWay = true;
+        goingToTarget = true;
+    }
 
-		if (index == 1)
-			SetVerticalLoop();
-		else if (index == 2)
-			SetHorizontalLoop();
-		else if (index == 3)
-			SetOneWayUp();
-		else if (index == 4)
-			SetOneWayDown();
+    public void SetMovementPattern(int index)
+    {
+        if (index < 1 || index > 4)
+        {
+            GD.PushError(
+                "Padrão inválido. Use 1 (vertical loop), 2 (horizontal loop), 3 (one-way up) ou 4 (one-way down)."
+            );
+            return;
+        }
 
-		goingToTarget = true;
-		isMoving = true;
-	}
+        MovementPatternIndex = index;
 
-	public void ActivateMovement()
-	{
-		isMoving = true;
-		SetPhysicsEnabled(true);
-	}
+        if (index == 1)
+            SetVerticalLoop();
+        else if (index == 2)
+            SetHorizontalLoop();
+        else if (index == 3)
+            SetOneWayUp();
+        else if (index == 4)
+            SetOneWayDown();
 
-	public void Stop()
-	{
-		isMoving = false;
-		SetPhysicsEnabled(false);
-	}
+        goingToTarget = true;
+        isMoving = true;
+    }
 
-	public void ReturnToStart()
-	{
-		Position = startPosition;
-		goingToTarget = true;
-	}
+    public void ActivateMovement()
+    {
+        isMoving = true;
+        SetPhysicsEnabled(true);
+    }
 
-	private void SetPhysicsEnabled(bool enabled)
-	{
-		if (collisionShape == null)
-			return;
+    public void Stop()
+    {
+        isMoving = false;
+        SetPhysicsEnabled(false);
+    }
 
-		collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, !enabled);
-	}
+    public void ReturnToStart()
+    {
+        Position = startPosition;
+        goingToTarget = true;
+    }
 
-	public void ApplyEffect(string effectId, Variant? value = null)
-	{
-		switch (effectId)
-		{
-			case "set_pattern":
-				if (value.HasValue)
-				{
-					int pattern = (int)value.Value.AsDouble();
-					SetMovementPattern(pattern);
-				}
-				break;
+    private void SetPhysicsEnabled(bool enabled)
+    {
+        if (collisionShape == null)
+            return;
 
-			case "activate":
-				ActivateMovement();
-				break;
+        collisionShape.SetDeferred(CollisionShape2D.PropertyName.Disabled, !enabled);
+    }
 
-			case "stop":
-				Stop();
-				break;
-		}
-	}
+    public void ApplyEffect(string effectId, Variant? value = null)
+    {
+        switch (effectId)
+        {
+            case "set_pattern":
+                if (value.HasValue)
+                {
+                    int pattern = (int)value.Value.AsDouble();
+                    SetMovementPattern(pattern);
+                }
+                break;
+
+            case "activate":
+                ActivateMovement();
+                break;
+
+            case "stop":
+                Stop();
+                break;
+        }
+    }
 }
