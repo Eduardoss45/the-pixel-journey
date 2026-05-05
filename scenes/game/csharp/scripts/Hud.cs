@@ -6,6 +6,7 @@ public partial class Hud : CanvasLayer
 	[Export] public NodePath LivesLabelPath { get; set; } = "ControlBox/HBoxNumberLifes/CountLifes";
 	[Export] public NodePath PlayerPath { get; set; } = "../Player";
 	[Export] public NodePath BookButtonPath { get; set; } = "Book";
+	[Export] public NodePath SkipDialogLabelPath { get; set; } = "LblSkip";
 	[Export] public NodePath MenuContainerPath { get; set; } = "../UILayer/MenuContainer";
 	[Export] public NodePath InformationMenuPath { get; set; } = "../UILayer/MenuContainer/Menu";
 
@@ -15,10 +16,12 @@ public partial class Hud : CanvasLayer
 	private Label livesLabel;
 	private Player player;
 	private TextureButton bookButton;
+	private Label skipDialogLabel;
 	private Control menuContainer;
 	private InformationMenu informationMenu;
 	private ColorRect fadeOverlay;
 	private GameSession gameSession;
+	private Node dialogic;
 	private bool deathFlowRunning;
 
 	public override void _Ready()
@@ -26,9 +29,11 @@ public partial class Hud : CanvasLayer
 		livesLabel = GetNodeOrNull<Label>(LivesLabelPath);
 		player = ResolvePlayer();
 		bookButton = GetNodeOrNull<TextureButton>(BookButtonPath);
+		skipDialogLabel = GetNodeOrNull<Label>(SkipDialogLabelPath);
 		menuContainer = GetNodeOrNull<Control>(MenuContainerPath);
 		informationMenu = GetNodeOrNull<InformationMenu>(InformationMenuPath);
 		gameSession = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
+		dialogic = GetNodeOrNull<Node>("/root/Dialogic");
 
 		if (gameSession == null)
 		{
@@ -55,6 +60,8 @@ public partial class Hud : CanvasLayer
 		if (menuContainer != null)
 			menuContainer.Visible = false;
 		informationMenu?.CloseMenu();
+		SetSkipDialogLabelVisible(false);
+		RegisterDialogicHooks();
 
 		EnsureFadeOverlay();
 	}
@@ -86,6 +93,7 @@ public partial class Hud : CanvasLayer
 			bookButton.Pressed -= OnBookPressed;
 		if (informationMenu != null)
 			informationMenu.MenuClosed -= OnInformationMenuClosed;
+		UnregisterDialogicHooks();
 	}
 
 	private void OnLivesChanged(int lives)
@@ -190,6 +198,50 @@ public partial class Hud : CanvasLayer
 		tween.TweenProperty(fadeOverlay, "modulate:a", 1.0f, FadeDurationSeconds);
 		await ToSignal(tween, Tween.SignalName.Finished);
 		await ToSignal(GetTree().CreateTimer(DeathPauseSeconds), SceneTreeTimer.SignalName.Timeout);
+	}
+
+	private void RegisterDialogicHooks()
+	{
+		if (dialogic == null)
+			return;
+
+		var onStarted = new Callable(this, nameof(OnDialogStarted));
+		var onEnded = new Callable(this, nameof(OnDialogEnded));
+
+		if (!dialogic.IsConnected("timeline_started", onStarted))
+			dialogic.Connect("timeline_started", onStarted);
+		if (!dialogic.IsConnected("timeline_ended", onEnded))
+			dialogic.Connect("timeline_ended", onEnded);
+	}
+
+	private void UnregisterDialogicHooks()
+	{
+		if (dialogic == null)
+			return;
+
+		var onStarted = new Callable(this, nameof(OnDialogStarted));
+		var onEnded = new Callable(this, nameof(OnDialogEnded));
+
+		if (dialogic.IsConnected("timeline_started", onStarted))
+			dialogic.Disconnect("timeline_started", onStarted);
+		if (dialogic.IsConnected("timeline_ended", onEnded))
+			dialogic.Disconnect("timeline_ended", onEnded);
+	}
+
+	private void OnDialogStarted()
+	{
+		SetSkipDialogLabelVisible(true);
+	}
+
+	private void OnDialogEnded()
+	{
+		SetSkipDialogLabelVisible(false);
+	}
+
+	private void SetSkipDialogLabelVisible(bool visible)
+	{
+		if (skipDialogLabel != null)
+			skipDialogLabel.Visible = visible;
 	}
 
 	private async System.Threading.Tasks.Task FadeBackIn()

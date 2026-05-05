@@ -37,6 +37,7 @@ public partial class Npc : CharacterBody2D
     public override void _Ready()
     {
         _dialogic = GetNodeOrNull<Node>("/root/Dialogic");
+        RegisterDialogicHooks();
         _player = GetTree().GetFirstNodeInGroup("Player") as Player;
 
         if (VisualPath != null && !VisualPath.IsEmpty)
@@ -72,15 +73,45 @@ public partial class Npc : CharacterBody2D
         }
     }
 
+    public override void _UnhandledInput(InputEvent @event)
+    {
+        if (!ClickToStartDialogue || _isDialogRunning)
+            return;
+
+        if (
+            @event is not InputEventMouseButton mouse
+            || !mouse.Pressed
+            || mouse.ButtonIndex != MouseButton.Left
+        )
+            return;
+
+        if (IsMouseClickOverNpc(mouse.GlobalPosition))
+            StartDialogue();
+    }
+
     public override void _Process(double delta)
     {
         UpdateFacing();
+    }
+
+    public override void _ExitTree()
+    {
+        UnregisterDialogicHooks();
+        if (_interactionArea != null)
+            _interactionArea.InputEvent -= OnInteractionInput;
     }
 
     private async System.Threading.Tasks.Task EnableSkipAfterDelay()
     {
         await ToSignal(GetTree().CreateTimer(1.0), SceneTreeTimer.SignalName.Timeout);
         _canSkip = true;
+    }
+
+    private void OnDialogStarted()
+    {
+        _isDialogRunning = true;
+        _canSkip = false;
+        _ = EnableSkipAfterDelay();
     }
 
     private void OnDialogEnded()
@@ -108,6 +139,31 @@ public partial class Npc : CharacterBody2D
             && mouse.ButtonIndex == MouseButton.Left
         )
             StartDialogue();
+    }
+
+    private bool IsMouseClickOverNpc(Vector2 globalMousePosition)
+    {
+        var spaceState = GetWorld2D().DirectSpaceState;
+        var query = new PhysicsPointQueryParameters2D
+        {
+            Position = globalMousePosition,
+            CollideWithAreas = true,
+            CollideWithBodies = false,
+        };
+
+        var hits = spaceState.IntersectPoint(query);
+        foreach (var hit in hits)
+        {
+            var colliderVariant = hit["collider"];
+            if (colliderVariant.VariantType != Variant.Type.Object)
+                continue;
+
+            var colliderObject = colliderVariant.AsGodotObject();
+            if (colliderObject == _interactionArea || colliderObject == this)
+                return true;
+        }
+
+        return false;
     }
 
     private async System.Threading.Tasks.Task StartDialogueAfterDelay()
@@ -147,16 +203,34 @@ public partial class Npc : CharacterBody2D
         }
 
         _dialogic.Call("start", timelineArg);
+    }
 
-        _isDialogRunning = true;
-        _canSkip = false;
+    private void RegisterDialogicHooks()
+    {
+        if (_dialogic == null)
+            return;
 
-        _ = EnableSkipAfterDelay();
+        var onStarted = new Callable(this, nameof(OnDialogStarted));
+        var onEnded = new Callable(this, nameof(OnDialogEnded));
 
-        if (!_dialogic.IsConnected("timeline_ended", new Callable(this, nameof(OnDialogEnded))))
-        {
-            _dialogic.Connect("timeline_ended", new Callable(this, nameof(OnDialogEnded)));
-        }
+        if (!_dialogic.IsConnected("timeline_started", onStarted))
+            _dialogic.Connect("timeline_started", onStarted);
+        if (!_dialogic.IsConnected("timeline_ended", onEnded))
+            _dialogic.Connect("timeline_ended", onEnded);
+    }
+
+    private void UnregisterDialogicHooks()
+    {
+        if (_dialogic == null)
+            return;
+
+        var onStarted = new Callable(this, nameof(OnDialogStarted));
+        var onEnded = new Callable(this, nameof(OnDialogEnded));
+
+        if (_dialogic.IsConnected("timeline_started", onStarted))
+            _dialogic.Disconnect("timeline_started", onStarted);
+        if (_dialogic.IsConnected("timeline_ended", onEnded))
+            _dialogic.Disconnect("timeline_ended", onEnded);
     }
 
     private void UpdateFacing()

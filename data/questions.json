@@ -18,23 +18,6 @@
     },
     {
         "id": 2,
-        "instruction": "Qual palavra usamos quando NÃO queremos permitir que o valor de uma variável mude depois?",
-        "optionKeys": [
-            "A",
-            "B",
-            "C",
-            "D"
-        ],
-        "optionValues": [
-            "var",
-            "let",
-            "const",
-            "change"
-        ],
-        "correctOption": "C"
-    },
-    {
-        "id": 3,
         "instruction": "Qual dessas formas cria uma variável em JavaScript?",
         "optionKeys": [
             "A",
@@ -49,6 +32,23 @@
             "number idade = 20;"
         ],
         "correctOption": "B"
+    },
+    {
+        "id": 3,
+        "instruction": "Qual palavra usamos quando NÃO queremos permitir que o valor de uma variável mude depois?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "var",
+            "let",
+            "const",
+            "change"
+        ],
+        "correctOption": "C"
     },
     {
         "id": 4,
@@ -83,5 +83,22 @@
             "var nome = 'Ana';"
         ],
         "correctOption": "A"
+    },
+    {
+        "id": 6,
+        "instruction": "O que acontece ao tentar alterar o valor de uma constante em JavaScript?",
+        "optionKeys": [
+            "A",
+            "B",
+            "C",
+            "D"
+        ],
+        "optionValues": [
+            "O valor é alterado normalmente",
+            "O JavaScript gera um erro",
+            "O valor vira undefined",
+            "A constante se transforma em variável"
+        ],
+        "correctOption": "B"
     }
 ]

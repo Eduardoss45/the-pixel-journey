@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Godot;
 
 public partial class TropicFlow : Node2D
@@ -16,6 +17,7 @@ public partial class TropicFlow : Node2D
     [Export(PropertyHint.File, "*.ogg")] public string BossMusicPath { get; set; } = DefaultBossMusicPath;
     [Export(PropertyHint.File, "*.mp4")] public string CreditsCutscenePath { get; set; } = DefaultCreditsCutscenePath;
     [Export(PropertyHint.File, "*.tscn")] public string MainMenuScenePath { get; set; } = DefaultMainMenuScenePath;
+    [Export] public NodePath SkipLabelPath { get; set; } = "HUD/LblSkip";
 
     private AudioStreamPlayer2D _musicPlayer;
     private AudioStream _gameMusic;
@@ -24,6 +26,12 @@ public partial class TropicFlow : Node2D
     private CanvasLayer _fadeLayer;
     private ColorRect _fadeRect;
     private AudioStream _desiredMusic;
+    private Label _skipLabel;
+    private CanvasLayer _skipOverlayLayer;
+    private Label _skipOverlayLabel;
+    private bool _isCreditsCutscenePlaying;
+    private bool _canSkipCreditsCutscene;
+    private TaskCompletionSource _creditsCutsceneTcs;
 
     public override void _Ready()
     {
@@ -43,6 +51,9 @@ public partial class TropicFlow : Node2D
         ForceLoopEnabled(_gameMusic);
         ForceLoopEnabled(_bossMusic);
         EnsureFadeOverlay();
+        _skipLabel = GetNodeOrNull<Label>(SkipLabelPath);
+        EnsureSkipOverlayLabel();
+        SetSkipLabelVisible(false);
 
         var session = GameSession.Instance ?? GetNodeOrNull<GameSession>("/root/GameSession");
         if (session != null)
@@ -72,6 +83,9 @@ public partial class TropicFlow : Node2D
 
     public override void _Process(double delta)
     {
+        if (_isCreditsCutscenePlaying && _canSkipCreditsCutscene && Input.IsActionJustPressed("ui_cancel"))
+            SkipCreditsCutscene();
+
         if (_endingStarted || _musicPlayer == null || _desiredMusic == null)
             return;
 
@@ -93,6 +107,18 @@ public partial class TropicFlow : Node2D
             _musicPlayer.VolumeDb = NormalVolumeDb;
             _musicPlayer.Play();
         }
+    }
+
+    public override void _Input(InputEvent @event)
+    {
+        if (_isCreditsCutscenePlaying && _canSkipCreditsCutscene && @event.IsActionPressed("ui_cancel"))
+            SkipCreditsCutscene();
+    }
+
+    public override void _UnhandledKeyInput(InputEvent @event)
+    {
+        if (_isCreditsCutscenePlaying && _canSkipCreditsCutscene && @event.IsActionPressed("ui_cancel"))
+            SkipCreditsCutscene();
     }
 
     private void OnMusicFinished()
@@ -192,12 +218,92 @@ public partial class TropicFlow : Node2D
         player.Stream = stream;
         player.StreamPosition = 0.0;
         player.Paused = false;
-        LockPlayerMovementForCutscene();
-        player.Play();
 
-        await ToSignal(player, VideoStreamPlayer.SignalName.Finished);
+        _isCreditsCutscenePlaying = true;
+        _canSkipCreditsCutscene = false;
+        _creditsCutsceneTcs = new TaskCompletionSource();
+        SetSkipLabelVisible(false);
+
+        LockPlayerMovementForCutscene();
+        player.Finished += OnCreditsCutsceneFinished;
+        player.Play();
+        _ = EnableCreditsSkipAfterDelay();
+        await _creditsCutsceneTcs.Task;
+
+        _isCreditsCutscenePlaying = false;
+        _canSkipCreditsCutscene = false;
+        SetSkipLabelVisible(false);
+        player.Finished -= OnCreditsCutsceneFinished;
 
         GetTree().ChangeSceneToFile(MainMenuScenePath);
+    }
+
+    private async System.Threading.Tasks.Task EnableCreditsSkipAfterDelay()
+    {
+        await ToSignal(GetTree().CreateTimer(1.0), SceneTreeTimer.SignalName.Timeout);
+
+        if (!_isCreditsCutscenePlaying)
+            return;
+
+        _canSkipCreditsCutscene = true;
+        SetSkipLabelVisible(true);
+    }
+
+    private void SkipCreditsCutscene()
+    {
+        if (!_isCreditsCutscenePlaying || !_canSkipCreditsCutscene)
+            return;
+
+        _creditsCutsceneTcs?.TrySetResult();
+    }
+
+    private void OnCreditsCutsceneFinished()
+    {
+        _creditsCutsceneTcs?.TrySetResult();
+    }
+
+    private void SetSkipLabelVisible(bool visible)
+    {
+        if (_skipLabel != null)
+            _skipLabel.Visible = false;
+        if (_skipOverlayLabel != null)
+            _skipOverlayLabel.Visible = visible;
+    }
+
+    private void EnsureSkipOverlayLabel()
+    {
+        if (_skipOverlayLayer != null && IsInstanceValid(_skipOverlayLayer) && _skipOverlayLabel != null)
+            return;
+
+        _skipOverlayLayer = new CanvasLayer
+        {
+            Layer = 250,
+            ProcessMode = ProcessModeEnum.Always
+        };
+        AddChild(_skipOverlayLayer);
+
+        _skipOverlayLabel = new Label();
+        _skipOverlayLabel.Visible = false;
+        _skipOverlayLabel.ZIndex = 1;
+        _skipOverlayLabel.TopLevel = true;
+        _skipOverlayLabel.SetAnchorsPreset(Control.LayoutPreset.CenterTop);
+        _skipOverlayLabel.OffsetLeft = -120;
+        _skipOverlayLabel.OffsetRight = 120;
+        _skipOverlayLabel.OffsetTop = 10;
+        _skipOverlayLabel.OffsetBottom = 34;
+        _skipOverlayLabel.HorizontalAlignment = HorizontalAlignment.Center;
+        _skipOverlayLabel.VerticalAlignment = VerticalAlignment.Center;
+        _skipOverlayLabel.Text = _skipLabel?.Text ?? "Pressione ESC para pular";
+
+        if (_skipLabel != null)
+        {
+            _skipOverlayLabel.Theme = _skipLabel.Theme;
+            _skipOverlayLabel.AddThemeFontOverride("font", _skipLabel.GetThemeFont("font"));
+            _skipOverlayLabel.AddThemeFontSizeOverride("font_size", _skipLabel.GetThemeFontSize("font_size"));
+            _skipOverlayLabel.AddThemeColorOverride("font_color", _skipLabel.GetThemeColor("font_color"));
+        }
+
+        _skipOverlayLayer.AddChild(_skipOverlayLabel);
     }
 
     private void LockPlayerMovementForCutscene()

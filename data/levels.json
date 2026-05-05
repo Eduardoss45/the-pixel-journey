@@ -2,12 +2,12 @@
     "levels": [
         {
             "levelId": "functions_move_01",
-            "instruction": "Crie uma função chamada ativarPlataforma() que retorne 3 (padrão de movimento de subir).",
+            "instruction": "Crie uma função chamada ativarPlataforma() que retorne 4 (padrão de movimento de descer).",
             "type": "function",
             "requiredFunction": "ativarPlataforma",
-            "expectedReturn": 3,
+            "expectedReturn": 4,
             "validPatterns": [
-                3
+                4
             ],
             "effect": "set_pattern"
         },
@@ -19,15 +19,6 @@
             "expectedValue": true,
             "validPatterns": [],
             "effect": "activate"
-        },
-        {
-            "levelId": "condicional_01",
-            "instruction": "Se a energia for maior que 50, defina 'plataformaAtiva' como true.",
-            "type": "variable",
-            "requiredVariable": "plataformaAtiva",
-            "expectedValue": true,
-            "validPatterns": [],
-            "effect": "activate_platform"
         }
     ]
 }
